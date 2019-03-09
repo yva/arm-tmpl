@@ -1,0 +1,282 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "ipid": {
+      "type": "string",
+      "metadata": {
+        "description": "FQDN prefix, customer name, etc"
+      }
+    },    
+    "params": {
+      "type": "secureObject",
+      "defaultValue": {
+      }
+    },
+    "base": {
+      "type": "object",
+      "defaultValue": {
+      }      
+    },
+    "vm": {
+      "type": "object",
+      "metadata": {
+        "description": "Size of VM and swap size"
+      }
+    }
+  },
+  "variables": {
+    "hw0": {
+      "hw": {
+        "size": "Standard_B1ms", 
+        "count": 0,
+        "diskStorageType": "Standard_LRS"
+      }
+    },
+    "host": {
+      "avset": "[concat(parameters('vm').prefix, '_avs')]",
+      "secureGroup": "[concat(parameters('vm').prefix,'_sg')]",
+      "nicname": "[concat(parameters('vm').prefix, '_nic')]",
+      "vmname": "[concat(parameters('vm').prefix, '_vm')]",
+      "vmhostname": "[parameters('vm').prefix]",
+      "subnet": "[parameters('vm').prefix]",
+      "hw": "[union(varibles('hw0'), parameters('vm')).hw]"
+    },
+    "refs": {
+      "secureRef": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('host').secureGroup))]",
+      "avsetRef": "[resourceId('Microsoft.Compute/availabilitySets', variables('host').avset)]",
+      "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]"
+    },
+    "env": "[base64(string(parameters('params')))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('host').secureGroup]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-06-15",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "http_rule",
+            "properties": {
+              "priority": 100,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "description": "Allow http",
+              "access": "Allow",
+              "destinationPortRange": "80",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet"
+            }
+          },
+          {
+            "name": "https_rule",
+            "properties": {
+              "priority": 101,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "description": "Allow https",
+              "access": "Allow",
+              "destinationPortRange": "443",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet"
+            }
+          },
+          {
+            "name": "https_amdin_rule",
+            "properties": {
+              "priority": 102,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "description": "Allow https 4 admin",
+              "access": "Allow",
+              "destinationPortRange": "8080",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet"
+            }
+          },
+          {
+            "name": "ssh_jump",
+            "properties": {
+              "priority": 103,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "description": "Allow ssh",
+              "access": "Allow",
+              "destinationPortRange": "22",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet"
+            }
+          },
+          {
+            "name": "vpnudp_rule",
+            "properties": {
+              "priority": 104,
+              "direction": "Inbound",
+              "protocol": "Udp",
+              "description": "Allow vpn Udp",
+              "access": "Allow",
+              "destinationPortRange": "11940",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet"
+            }
+          },
+          {
+            "name": "vpntcp_rule",
+            "properties": {
+              "priority": 105,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "description": "Allow vpn Tcp",
+              "access": "Allow",
+              "destinationPortRange": "4443",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "sourceAddressPrefix": "Internet"
+            }
+          }          
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[providers('Microsoft.Compute', 'availabilitySets').apiVersions[0]]",
+      "name": "[variables('host').avset]",
+      "sku": {
+        "name": "Aligned"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 3,
+        "platformFaultDomainCount": 3
+     }
+    },
+    {
+      "name": "[variables('host').nicname]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "dependsOn": [
+        "[variables('refs').secureRef]"
+      ],
+      "properties": {
+        "networkSecurityGroup": {
+          "id": "[variables('refs').secureRef]"
+        },
+        "ipConfigurations": [
+          {
+            "name": "ipconfig",
+            "properties": {
+              "subnet": {
+                "id": "[variables('refs').subnetRef]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[parameters('ipid')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[variables('host').vmname]",
+      "apiVersion": "[providers('Microsoft.Compute', 'virtualMachines').apiVersions[0]]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('host').nicname)]",
+        "[variables('refs').avsetRef]"
+      ],
+      "type": "Microsoft.Compute/virtualMachines",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('host').hw.size]"
+        },
+        "osProfile": {
+          "adminUsername": "[parameters('base').adminUsername]",
+          "computerName": "[variables('host').vmhostname]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/',parameters('base').adminUsername,'/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('base').adminPublicKey]"
+                }
+              ]
+            }
+          }
+        },
+        "availabilitySet": {
+          "id": "[variables('refs').avsetRef]"
+        },
+        "storageProfile": {
+          "imageReference": "[parameters('base').vmImage]",
+          "osDisk": {
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "[variables('host').hw.diskStorageType]"
+            },
+            "createOption": "FromImage",
+            "name": "[concat('os-', variables('host').vmname)]"
+          }, 
+          "dataDisks": [
+            {
+              "name": "[concat('data-', variables('host').vmname)]",
+              "diskSizeGB": 128,
+              "lun": 0,
+              "managedDisk": {
+                "storageAccountType": "[variables('host').hw.diskStorageType]"
+              },
+              "createOption": "Empty"
+            }            
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('host').nicname))]",
+              "properties": {
+                "primary": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[concat(variables('host').vmname, '/extension')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('host').vmname)]"
+      ],
+      "copy": {
+        "count": "[variables('host').hw.count]",
+        "name": "virtualMachineLoop"
+      },
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": 
+          [
+            "[uri(deployment().properties.templateLink.uri, 'init.sh')]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('bash init.sh', ' ', variables('env'))]"
+        }
+      }
+    }
+  ]
+}

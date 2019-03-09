@@ -1,0 +1,158 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type":"string", 
+      "metadata": {
+        "description": "URL prefix (org name for example), use small latin letters and digits."
+      }
+    },
+    "yvalogin": {
+      "type": "string",
+      "minLength": 4,       
+      "metadata": {
+        "description": "Yva login"
+      }
+    },
+    "yvapass": {
+      "type": "securestring",
+      "minLength": 8, 
+      "metadata": {
+        "description": "Yva password"
+      }
+    },
+    "securestring": {
+      "type": "securestring",
+      "minLength": 4,
+      "metadata": {
+        "description": "Random secure string"
+      }
+    },
+    "size": {
+      "type":"string",
+      "allowedValues": [
+        "test", 
+        "tiny", 
+        "small"
+      ], 
+      "defaultValue": "small",
+      "metadata": {
+        "description": "Service size"
+      }
+    },
+    "custom": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "You can leave it empty"
+      }      
+    }
+  },
+  "variables": {
+    "admin": "yva",
+    "adminkey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7LfbMepWP5FNbATMmub6iV3rPPxVNB7IuJivBCQPIFcA5PGwv76ffi9UXTZgx9m2mzfCw1/yl5pZ82Anvsy6rJjduFevDXcb5EGIQQAFe+ipIzaIKBnUJL86Sb6ftym+VdNz7n/tuxidI4ou691uAl6PcIOekEn/KxlvpaXfB/OJKTP0sYxLK0Fe0s2EPn1nGXFe6WFcfOhDXWVKvRqFD+f6tFaOaWAgJm/ie31ODpbVl8a42gR9sv5ICWUQ2ry7VS/LxC1jiz6sM5IwqRL4ORbsrvFPXD/VlbcgyHIgpDZRQ4RGcle1Lj4WMc+/LQOgk7R+aR3iIr9SEgNwm3wkl YVAStaff",
+    "host_kv": {
+      "test": {
+        "front": {
+          "kv": {
+            "PLATFORM_YVA_HOST_ROLE": "single"
+          }
+        }
+      }, 
+      "tiny": {
+        "front": {
+          "kv": {
+            "PLATFORM_YVA_HOST_ROLE": "mngrfront"
+          }
+        },
+        "exec": {
+          "kv": {
+            "PLATFORM_YVA_HOST_ROLE": "exec"
+          }
+        }
+      },      
+      "small": { 
+        "mngr": {
+          "kv": {
+            "PLATFORM_YVA_HOST_ROLE": "mngr", 
+            "INIT_NOTIFY_BOOTSTRAP": "true"
+          }
+        },
+        "front": {
+          "kv": {
+            "PLATFORM_YVA_HOST_ROLE": "front"
+          }
+        },          
+        "exec": {
+          "kv": {
+            "PLATFORM_YVA_HOST_ROLE": "exec" 
+          }
+        }
+      }
+    },
+    "size2use": "[parameters('size')]"
+  }, 
+  "resources": [
+    {
+      "name": "master",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'master.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "master": {
+            "value": {
+              "prefix": "yva", 
+              "adminkey": "[variables('adminkey')]",
+              "name": "[parameters('name')]" 
+            }
+          }, 
+          "appkv": {
+            "value": {
+              "INIT_PLATFORM_USER": "[variables('admin')]",
+              "INIT_DOCKER_USER": "[parameters('yvalogin')]",
+              "INIT_DOCKER_PASS": "[parameters('yvapass')]",
+              "INIT_AZURE_DPLNAME": "[parameters('name')]",
+              "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
+              "PLATFORM_RELEASE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json",      
+              "YVA_STORAGE_KEY": "${INIT_AZURE_STORAGE_KEY}",
+              "YVA_STORAGECONNECT": "${INIT_AZURE_STORAGECONNECT}",
+              "YVA_STORAGE": "${INIT_AZURE_STORAGE}",
+              "YVA_URL_0": "${INIT_AZURE_URL}"
+            }
+          },
+          "appkv_secure": {
+            "value": {
+              "YVA_SECURE_PLAIN": "[parameters('securestring')]",
+              "YVA_SALT": "[uniqueString(concat(subscription().id, parameters('securestring')))]"
+            }
+          }, 
+          "hostkv": {
+            "value": "[variables('host_kv')[variables('size2use')]]"
+          }, 
+          "size": {
+            "value": "[variables('size2use')]"
+          },
+          "custom": {
+            "value": "[parameters('custom')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "uri": {
+      "type": "string",
+      "value": "[reference('master').outputs.uri.value]"
+    },
+    "ip": {
+      "type": "string",
+      "value": "[reference('master').outputs.ip.value]"
+    }
+  }
+}
