@@ -6,7 +6,7 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 GTBRANCH=$(git rev-parse --abbrev-ref HEAD)
 GTVERSION=$(git rev-parse HEAD | cut -c 1-12 -)
-BRANCH=${1:-"$GTBRANCH:$GTVERSION"}
+BRANCH=${1:-"$GTBRANCH"}
 BRANCH=${BRANCH,,}
 
 echo "Out: branches/$BRANCH" 1>&2 
