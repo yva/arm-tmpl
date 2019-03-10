@@ -30,7 +30,8 @@
       "hw": {
         "size": "Standard_B1ms", 
         "count": 0,
-        "diskStorageType": "Standard_LRS"
+        "diskStorageType": "Standard_LRS",
+        "diskSizeGB": 128
       }
     },
     "host": {
@@ -40,7 +41,7 @@
       "vmname": "[concat(parameters('vm').prefix, '_vm')]",
       "vmhostname": "[parameters('vm').prefix]",
       "subnet": "[parameters('vm').prefix]",
-      "hw": "[union(varibles('hw0'), parameters('vm')).hw]"
+      "hw": "[union(variables('hw0'), parameters('vm')).hw]"
     },
     "refs": {
       "secureRef": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('host').secureGroup))]",
@@ -229,7 +230,7 @@
           "dataDisks": [
             {
               "name": "[concat('data-', variables('host').vmname)]",
-              "diskSizeGB": 128,
+              "diskSizeGB": "[variables('host').hw.diskSizeGB]",
               "lun": 0,
               "managedDisk": {
                 "storageAccountType": "[variables('host').hw.diskStorageType]"

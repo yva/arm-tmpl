@@ -25,6 +25,7 @@
         "size": "Standard_B1ms", 
         "count": 0,
         "diskStorageType": "Standard_LRS",
+        "diskSizeGB": 128,
         "startIP": 4 
       }
     },    
@@ -35,14 +36,12 @@
       "avset": "[concat(parameters('vm').prefix, '_avs')]",
       "vmhostname": "[parameters('vm').prefix]",
       "subnet": "[parameters('vm').prefix]",
-      "hw": "[union(varibles('hw0'), parameters('vm')).hw]"
+      "hw": "[union(variables('hw0'), parameters('vm')).hw]"
     },
     "refs": {
       "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]",
       "avsetRef": "[resourceId('Microsoft.Compute/availabilitySets', variables('host').avset)]"
     },
-    "subnetprefix": "[reference(variables('refs').subnetRef).properties.addressPrefix]",
-    "host_ip_pref": "[substring(variables('subnetprefix'), 0, lastIndexOf(variables('subnetprefix'), '.') )]",
     "env": "[base64(string(parameters('params')))]"
   },
   "resources": [
@@ -78,7 +77,7 @@
               "subnet": {
                 "id": "[variables('refs').subnetRef]"
               },
-              "privateIPAddress": "[concat(variables('host_ip_pref'), '.', string(add(copyindex(), int(variables('host').hw.startIP) )))]",
+              "privateIPAddress": "[concat(substring(reference(variables('refs').subnetRef).properties.addressPrefix, 0, lastIndexOf(reference(variables('refs').subnetRef).properties.addressPrefix, '.') ), '.', string(add(copyindex(), int(variables('host').hw.startIP) )))]",
               "privateIPAllocationMethod": "Static"
             }
           }
@@ -133,7 +132,7 @@
           "dataDisks": [
             {
               "name": "[concat('data-', variables('host').vmname, copyindex())]",
-              "diskSizeGB": 128,
+              "diskSizeGB": "[variables('host').hw.diskSizeGB]",
               "lun": 0,
               "managedDisk": {
                 "storageAccountType": "[variables('host').hw.diskStorageType]"

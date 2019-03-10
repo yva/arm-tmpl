@@ -24,7 +24,8 @@
       "hw": {
         "size": "Standard_B1ms", 
         "count": 0,
-        "diskStorageType": "Standard_LRS"
+        "diskStorageType": "Standard_LRS", 
+        "diskSizeGB": 128
       }
     },     
     "host": {
@@ -33,7 +34,7 @@
       "vmname": "[parameters('vm').prefix]",
       "ipname": "[concat(parameters('vm').prefix, 'IP')]",
       "subnet": "[parameters('vm').prefix]",
-      "hw": "[union(varibles('hw0'), parameters('vm')).hw]"
+      "hw": "[union(variables('hw0'), parameters('vm')).hw]"
     },
     "refs": {
       "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]"
@@ -83,7 +84,7 @@
             }, 
             "dataDisks": [
               {
-                "diskSizeGB": 128,
+                "diskSizeGB": "[variables('host').hw.diskSizeGB]",
                 "lun": 0,
                 "managedDisk": {
                   "storageAccountType": "[variables('host').hw.diskStorageType]"
