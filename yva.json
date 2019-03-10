@@ -31,11 +31,7 @@
     },
     "size": {
       "type":"string",
-      "allowedValues": [
-        "test", 
-        "tiny", 
-        "small"
-      ], 
+      "allowedValues": ["test", "small" ], 
       "defaultValue": "small",
       "metadata": {
         "description": "Service size"
@@ -52,6 +48,7 @@
   "variables": {
     "admin": "yva",
     "adminkey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7LfbMepWP5FNbATMmub6iV3rPPxVNB7IuJivBCQPIFcA5PGwv76ffi9UXTZgx9m2mzfCw1/yl5pZ82Anvsy6rJjduFevDXcb5EGIQQAFe+ipIzaIKBnUJL86Sb6ftym+VdNz7n/tuxidI4ou691uAl6PcIOekEn/KxlvpaXfB/OJKTP0sYxLK0Fe0s2EPn1nGXFe6WFcfOhDXWVKvRqFD+f6tFaOaWAgJm/ie31ODpbVl8a42gR9sv5ICWUQ2ry7VS/LxC1jiz6sM5IwqRL4ORbsrvFPXD/VlbcgyHIgpDZRQ4RGcle1Lj4WMc+/LQOgk7R+aR3iIr9SEgNwm3wkl YVAStaff",
+
     "host_kv": {
       "test": {
         "front": {
@@ -91,7 +88,7 @@
         }
       }
     },
-    "size2use": "[parameters('size')]"
+    "cSize": "[parameters('size')]"
   }, 
   "resources": [
     {
@@ -107,7 +104,6 @@
         "parameters": {
           "master": {
             "value": {
-              "prefix": "yva", 
               "adminkey": "[variables('adminkey')]",
               "name": "[parameters('name')]" 
             }
@@ -119,11 +115,7 @@
               "INIT_DOCKER_PASS": "[parameters('yvapass')]",
               "INIT_AZURE_DPLNAME": "[parameters('name')]",
               "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
-              "PLATFORM_RELEASE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json",      
-              "YVA_STORAGE_KEY": "${INIT_AZURE_STORAGE_KEY}",
-              "YVA_STORAGECONNECT": "${INIT_AZURE_STORAGECONNECT}",
-              "YVA_STORAGE": "${INIT_AZURE_STORAGE}",
-              "YVA_URL_0": "${INIT_AZURE_URL}"
+              "PLATFORM_RELEASE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json"
             }
           },
           "appkv_secure": {
@@ -133,10 +125,10 @@
             }
           }, 
           "hostkv": {
-            "value": "[variables('host_kv')[variables('size2use')]]"
+            "value": "[variables('host_kv')[variables('cSize')]]"
           }, 
           "size": {
-            "value": "[variables('size2use')]"
+            "value": "[variables('cSize')]"
           },
           "custom": {
             "value": "[parameters('custom')]"

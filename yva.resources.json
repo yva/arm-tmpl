@@ -5,10 +5,8 @@
     "master": {
       "type": "object", 
       "defaultValue": {
-        "prefix": "", 
-        "admin": "", 
         "adminkey": "",
-        "name": "" 
+        "name": ""
       }
     }, 
     "appkv": {
@@ -19,21 +17,9 @@
       "type": "secureObject", 
       "defaultValue": {}
     },
-    "hostkv": {
-      "type": "object"
-    },
     "size": {
-      "type":"string",
-      "allowedValues": [
-        "test", 
-        "tiny", 
-        "small", 
-        "inf"
-      ], 
-      "defaultValue": "small",
-      "metadata": {
-        "description": "Service size"
-      }
+      "type": "string",
+      "allowedValues": ["small", "test"]
     },
     "custom": {
       "type": "object",
@@ -44,13 +30,16 @@
     }
   },
   "variables": {
+    "prefix": "yva",
+    "admin": "yva", 
     "rootResourceGroup": "[resourceGroup().name]",
-    "vnetName": "[concat(parameters('master').prefix,'_vnet')]",
-    "storageAccountName": "[concat(parameters('master').prefix,uniqueString(concat(parameters('master').prefix,subscription().id, '/resourceGroups/', variables('rootResourceGroup'))))]",
+    "vnetName": "[concat(variables('prefix'),'_vnet')]",
+    "storageAccountName": "[concat(variables('prefix'),uniqueString(concat(variables('prefix'),subscription().id, '/resourceGroups/', variables('rootResourceGroup'))))]",
     "masterkv": {
       "kv": {
         "PLATFORM_CONSUL_JOIN": "10.0.0.4",
-        "PLATFORM_CONSUL_EXPECT": 1
+        "PLATFORM_CONSUL_EXPECT": 1,
+        "INIT_PLATFORM_USER": "[variables('admin')]"
       }
     },
     "appkv": {
@@ -62,7 +51,7 @@
       "vnetRef": "[resourceId(variables('rootResourceGroup'), 'Microsoft.Network/virtualNetworks', variables('vnetName'))]",      
       "storageAccountName": "[variables('storageAccountName')]",
       "storageRef": "[resourceId(variables('rootResourceGroup'), 'Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",      
-      "appPrefix": "[parameters('master').prefix]",
+      "appPrefix": "[variables('prefix')]",
       "adminUsername": "[variables('params').kv.INIT_PLATFORM_USER]",
       "adminPublicKey": "[parameters('master').adminkey]",
       "vmImage": {
@@ -72,105 +61,56 @@
         "offer": "UbuntuServer"
       }
     },
-    "hostkv": "[parameters('hostkv')]",    
-    "sizes": {
+    "host_sets": {
       "test": {
-        "hosts": {
-          "front": {
-            "size": "Standard_A2m_v2", 
-            "subnet": "mngr",         
-            "prefix": "mngr",
-            "count": 1, 
-            "params": {
-              "kv": {
-                "INSTALL_SWAP_SIZE": "16000"
-              }
-            }
+        "front": {
+          "size": "Standard_B1ms",
+          "diskSizeGB": 128,
+          "prefix": "mngr",
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr",
+            "INIT_SWAP_SIZE": "4096",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
           }
-        }
+        },
+        "ss": {
+          "size": "Standard_B1ms",
+          "diskSizeGB": 128,
+          "prefix": "exec",
+          "roles": "az_process_ext",
+          "count": 0,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_process_ext",
+            "INIT_SWAP_SIZE": "4096"
+          }          
+        }        
       },
-      "tiny": {
-        "hosts": {
-          "front": {
-            "subnet": "mngr",         
-            "prefix": "mngr",
-            "count": 1,
-            "size": "Standard_B1ms", 
-            "params": {
-              "kv": {
-                "INSTALL_SWAP_SIZE": "4000"
-              }
-            }
-          },
-          "exec": {
-            "size": "Standard_A2m_v2", 
-            "prefix": "exec",
-            "subnet": "exec",   
-            "count": 1, 
-            "params": {
-              "kv": {
-                "INSTALL_SWAP_SIZE": "16000"
-              }
-            }         
+      "small": {
+        "front": {
+          "size": "Standard_E2_v3",
+          "diskSizeGB": 128,
+          "prefix": "mngr",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr",
+            "INIT_SWAP_SIZE": "16000",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
           }
-        }
-      },      
-      "small": { 
-        "hosts": {
-          "mngr": {
-            "size": "Standard_A2_v2", 
-            "subnet": "mngr",
-            "prefix": "mngr",     
-            "count": 1, 
-            "params": {
-              "kv": {
-                "INSTALL_SWAP_SIZE": "4000"
-              }
-            }
-          },
-          "front": {
-            "size": "Standard_B1ms", 
-            "subnet": "front",  
-            "prefix": "front",     
-            "count": 1,
-            "params": { 
-              "kv": {
-                "INSTALL_SWAP_SIZE": "0"
-              }
-            }
-          },          
-          "exec": {
-            "size": "Standard_E2_v3", 
-            "swap": "25000",
-            "prefix": "exec",
-            "subnet": "exec",    
-            "count": 1, 
-            "params": {
-              "kv": {
-                "INSTALL_SWAP_SIZE": "25000"
-              }
-            }
+        },
+        "ss": {
+          "size": "Standard_E2_v3",
+          "diskSizeGB": 128,
+          "prefix": "exec",
+          "count": 0,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_process_ext",
+            "INIT_SWAP_SIZE": "16000"
           }
-        }
-      }, 
-      "inf": {
-        "hosts": {
-          "front": {
-            "size": "Standard_B1ms", 
-            "subnet": "mngr",
-            "prefix": "mngr",
-            "count": 1, 
-            "params": {
-              "kv": {
-                "INSTALL_SWAP_SIZE": "4000"
-              }
-            }
-          }
-        }
-      }      
+        }        
+      }
     },
-    "size2use": "[parameters('size')]", 
-    "hosts_set": "[variables('sizes')[variables('size2use')].hosts]"
+    "cSize": "[parameters('size')]", 
+    "hosts": "[variables('host_sets')[variables('cSize')]]"
   }, 
   "resources": [
     {
@@ -209,10 +149,10 @@
           "v0": {
             "value": {
               "kv": {
-                "INIT_AZURE_STORAGECONNECT": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('base').storageAccountName, ';AccountKey=', reference('vnet').outputs.strkey.value)]",
-                "INIT_AZURE_STORAGE": "[variables('base').storageAccountName]",
-                "INIT_AZURE_STORAGE_KEY": "[reference('vnet').outputs.strkey.value]",
-                "INIT_AZURE_URL": "[reference('vnet').outputs.fqdn.value]"
+                "YVA_STORAGECONNECT": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('base').storageAccountName, ';AccountKey=', reference('vnet').outputs.strkey.value)]",
+                "YVA_STORAGE": "[variables('base').storageAccountName]",
+                "YVA_STORAGE_KEY": "[reference('vnet').outputs.strkey.value]",
+                "YVA_URL_0": "[reference('vnet').outputs.fqdn.value]"
               }
             }
           },
@@ -225,7 +165,7 @@
     {
       "name": "mngr",
       "type": "Microsoft.Resources/deployments",
-      "condition": "[contains(variables('hosts_set'), 'mngr')]",
+      "condition": "[contains(variables('hosts'), 'mngr')]",
       "apiVersion": "2015-01-01",
       "dependsOn": ["vnet", "generate-customdata"],
       "properties": {
@@ -236,20 +176,20 @@
         },
         "parameters": {
           "params": {
-            "value": "[union(variables('hosts_set').mngr.params, variables('hostkv').mngr , variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+            "value": "[union( json( concat('{\"kv\":', string(variables('hosts').mngr.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
           },
           "base": {
             "value": "[variables('base')]"
           },           
           "vm": {
-            "value": "[variables('hosts_set').mngr]"
+            "value": "[variables('hosts').mngr]"
           }
         }
       }
     },
     {
       "name": "front",
-      "condition": "[contains(variables('hosts_set'), 'front')]",
+      "condition": "[contains(variables('hosts'), 'front')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "dependsOn": ["vnet", "generate-customdata"],
@@ -264,13 +204,13 @@
             "value": "[reference('vnet').outputs.ipid.value]"
           },
           "params": {
-            "value": "[union(variables('hosts_set').front.params, variables('hostkv').front, variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+            "value": "[union(json( concat('{\"kv\":', string(variables('hosts').front.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
           },
           "base": {
             "value": "[variables('base')]"
           }, 
           "vm": {
-            "value": "[variables('hosts_set').front]"
+            "value": "[variables('hosts').front]"
           }          
         }
       }
@@ -279,7 +219,7 @@
       "name": "exec",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "condition": "[contains(variables('hosts_set'), 'exec')]",
+      "condition": "[contains(variables('hosts'), 'exec')]",
       "dependsOn": ["vnet", "generate-customdata"],
       "properties": {
         "mode": "Incremental",
@@ -289,13 +229,13 @@
         },
         "parameters": {
           "params": {
-            "value": "[union(variables('hosts_set').exec.params, variables('hostkv').exec, variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+            "value": "[union(json( concat('{\"kv\":', string(variables('hosts').exec.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
           },
           "base": {
             "value": "[variables('base')]"
           }, 
           "vm": {
-            "value": "[variables('hosts_set').exec]"
+            "value": "[variables('hosts').exec]"
           }
         }
       }

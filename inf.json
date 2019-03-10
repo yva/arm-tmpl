@@ -40,7 +40,7 @@
         }
       }
     },
-    "size2use": "inf"
+    "cSize": "inf"
   }, 
   "resources": [
     {
@@ -80,10 +80,10 @@
             }
           }, 
           "hostkv": {
-            "value": "[variables('host_kv')[variables('size2use')]]"
+            "value": "[variables('host_kv')[variables('cSize')]]"
           }, 
           "size": {
-            "value": "[variables('size2use')]"
+            "value": "[variables('cSize')]"
           },
           "custom": {
             "value": "[parameters('custom')]"

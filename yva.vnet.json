@@ -16,17 +16,11 @@
     }
   }, 
   "variables": {
-    "mngrSubnet": "mngr",
-    "appSubnet": "app",
-    "execSubnet": "exec",
-    "frontSubnet": "front",
-    "logsSubnet": "logs",
     "addressPrefix": "10.0.0.0/16",
+    "mngrSubnet": "mngr",
     "mngrPrefix": "10.0.0.0/24",
-    "appPrefix": "10.0.1.0/24", 
-    "frontPrefix": "10.0.2.0/24", 
-    "execPrefix": "10.0.3.0/24", 
-    "logsPrefix": "10.0.4.0/24"
+    "execSubnet": "exec",    
+    "execPrefix": "10.0.1.0/24"
   }, 
   "resources": [
     {
@@ -40,24 +34,6 @@
             "name": "[variables('mngrSubnet')]",
             "properties": {
               "addressPrefix": "[variables('mngrPrefix')]"
-            }
-          }, 
-          {
-            "name": "[variables('appSubnet')]",
-            "properties": {
-              "addressPrefix": "[variables('appPrefix')]"
-            }
-          }, 
-          {
-            "name": "[variables('frontSubnet')]",
-            "properties": {
-              "addressPrefix": "[variables('frontPrefix')]"
-            }
-          }, 
-          {
-            "name": "[variables('logsSubnet')]",
-            "properties": {
-              "addressPrefix": "[variables('logsPrefix')]"
             }
           }, 
           {
@@ -82,7 +58,7 @@
       "sku": {
           "name": "Standard_LRS"
       },
-      "kind": "StorageV2",
+      "kind": "Storage",
       "properties": {
         "encryption": {
           "services": {
