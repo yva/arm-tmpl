@@ -74,7 +74,7 @@
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
         },
-        "ss": {
+        "exec": {
           "size": "Standard_B1ms",
           "diskSizeGB": 128,
           "prefix": "exec",
@@ -98,7 +98,7 @@
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
         },
-        "ss": {
+        "exec": {
           "size": "Standard_E2_v3",
           "diskSizeGB": 128,
           "prefix": "exec",
@@ -230,13 +230,13 @@
         },
         "parameters": {
           "params": {
-            "value": "[union(json( concat('{\"kv\":', string(variables('hosts').ss.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+            "value": "[union(json( concat('{\"kv\":', string(variables('hosts').exec.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
           },
           "base": {
             "value": "[variables('base')]"
           }, 
           "vm": {
-            "value": "[variables('hosts').ss]"
+            "value": "[variables('hosts').exec]"
           }
         }
       }

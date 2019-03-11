@@ -21,13 +21,11 @@
   },
   "variables": {
     "hw0": {
-      "hw": {
         "size": "Standard_B1ms", 
         "count": 0,
         "diskStorageType": "Standard_LRS",
         "diskSizeGB": 128,
         "startIP": 4 
-      }
     },    
     "host": {
       "nicname": "[concat(parameters('vm').prefix, '_nic')]",
@@ -36,7 +34,7 @@
       "avset": "[concat(parameters('vm').prefix, '_avs')]",
       "vmhostname": "[parameters('vm').prefix]",
       "subnet": "[parameters('vm').prefix]",
-      "hw": "[union(variables('hw0'), parameters('vm')).hw]"
+      "hw": "[union(variables('hw0'), parameters('vm'))]"
     },
     "refs": {
       "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]",

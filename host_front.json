@@ -27,12 +27,10 @@
   },
   "variables": {
     "hw0": {
-      "hw": {
-        "size": "Standard_B1ms", 
-        "count": 0,
-        "diskStorageType": "Standard_LRS",
-        "diskSizeGB": 128
-      }
+      "size": "Standard_B1ms", 
+      "count": 0,
+      "diskStorageType": "Standard_LRS",
+      "diskSizeGB": 128
     },
     "host": {
       "avset": "[concat(parameters('vm').prefix, '_avs')]",
@@ -41,7 +39,7 @@
       "vmname": "[concat(parameters('vm').prefix, '_vm')]",
       "vmhostname": "[parameters('vm').prefix]",
       "subnet": "[parameters('vm').prefix]",
-      "hw": "[union(variables('hw0'), parameters('vm')).hw]"
+      "hw": "[union(variables('hw0'), parameters('vm'))]"
     },
     "refs": {
       "secureRef": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('host').secureGroup))]",
