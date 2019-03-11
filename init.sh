@@ -13,6 +13,8 @@ done
 # decode settings
 ENV_64BASE=$1
 ENV_DECODED=$(echo "$ENV_64BASE" | base64 --decode)
+echo "$ENV_DECODED" > $(mktemp -p "$DIR" -t "debug.kv.XXXXXX.json")
+
 
 upurl=$(echo "$ENV_DECODED" | jq -cer '.kv.PLATFORM_UPDATE_URL')
 zipurl=$(curl -sSf "$upurl" | jq -cre '.assets.setup.source.url')
