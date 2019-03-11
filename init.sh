@@ -21,7 +21,7 @@ zipurl=$(curl -sSf "$upurl" | jq -cre '.assets.setup.source.url')
 
 echo "Yva install: use >>$upurl<< and >>$zipurl<<." 1>&2
 
-dir=$(mktemp -d -p "$DIR")
+dir=$(mktemp -d)
 pushd "$dir"
 curl -sSf "$zipurl" -o "$dir/setup.zip"
 unzip setup.zip 
