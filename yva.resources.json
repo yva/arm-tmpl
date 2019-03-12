@@ -64,27 +64,16 @@
     "host_sets": {
       "test": {
         "front": {
-          "size": "Standard_B1ms",
+          "size": "Standard_A2m_v2",
           "diskSizeGB": 128,
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr",
-            "INIT_SWAP_SIZE": "4096",
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr,az_process_ext",
+            "INIT_SWAP_SIZE": "8192",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
-        },
-        "exec": {
-          "size": "Standard_B1ms",
-          "diskSizeGB": 128,
-          "prefix": "exec",
-          "roles": "az_process_ext",
-          "count": 0,
-          "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_process_ext",
-            "INIT_SWAP_SIZE": "4096"
-          }          
-        }        
+        } 
       },
       "small": {
         "front": {
