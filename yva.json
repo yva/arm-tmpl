@@ -76,7 +76,7 @@
               "PLATFORM_DOCKER_CR": "cr0.yva.ai",
               "INIT_AZURE_DPLNAME": "[parameters('name')]",
               "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
-              "PLATFORM_RELEASE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json"
+              "PLATFORM_UPDATE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json"
             }
           },
           "appkv_secure": {
