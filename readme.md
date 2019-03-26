@@ -1,23 +1,14 @@
-# ARM scripts 4 yva azure deploy
+# ARM  templates for [yva.ai](yva.ai) azure deploy
 
-*doesn't work 4 a moment, it's wait 4 github publish*
-[![Deploy][deplogo]](https://azuredeploy.net?repository=https://dl.yva.ai/public/arm/branches/params_/yva.json)
+<a href="https://azuredeploy.net?repository=https%3A%2F%2Fraw.githubusercontent.com%2Fyva%2Farm%2Fmaster%2Fyva.json" target="_blank">
+<img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
+</a>
 
-[deplogo]: http://azuredeploy.net/deploybutton.png
 
-# Files
+## Template variables  
 
-## yva.json 
-  * the one json to rule them all
-  * it holds structures with params and call its dependencies
+* **name**: prefix of azure generated url 4 your Yva instance, for example *aztmp.westeurope.cloudapp.azure.com*, **name** is *aztmp*
+* **yvalogin** & **yvapass**: credentials you recived from our sell department
+* **securestring**: password you provide 4 access to admin page 
 
-## vnet.json 
-  * virual network, subnets, URL, access rules
-
-## front.json  
-  * single node with ssh & http & https ports opened
-
-## host.json 
-  * simple node w/o direct access from internet
-## exec.json 
-  * VM for scale part of applicatin
+Please visit [yva.ai](yva.ai) for details

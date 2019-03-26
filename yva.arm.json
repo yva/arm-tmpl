@@ -3,44 +3,34 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "name": {
-      "type":"string", 
-      "metadata": {
-        "description": "URL prefix, can be org name, use small latin letters and digits."
-      }
+      "type":"string"
     },
-    "docker": {
-      "type": "secureObject", 
-      "defaultValue": {
-        "login": "", 
-        "pass": "",
-        "url": ""
-      }
-    },
-    "release": {
+    "yvalogin": {
       "type": "string",
-      "defaultValue": "v.1:release"
+      "minLength": 4
+    },
+    "yvapass": {
+      "type": "securestring",
+      "minLength": 8
+    },
+    "securestring": {
+      "type": "securestring",
+      "minLength": 8
+    },
+    "size": {
+      "type":"string",
+      "allowedValues": ["test", "small" ], 
+      "defaultValue": "small"
     },
     "custom": {
       "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "description": "You can leave it blank"
-      }      
+      "defaultValue": {}
     }
   },
   "variables": {
+    "admin": "yva",
     "adminkey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7LfbMepWP5FNbATMmub6iV3rPPxVNB7IuJivBCQPIFcA5PGwv76ffi9UXTZgx9m2mzfCw1/yl5pZ82Anvsy6rJjduFevDXcb5EGIQQAFe+ipIzaIKBnUJL86Sb6ftym+VdNz7n/tuxidI4ou691uAl6PcIOekEn/KxlvpaXfB/OJKTP0sYxLK0Fe0s2EPn1nGXFe6WFcfOhDXWVKvRqFD+f6tFaOaWAgJm/ie31ODpbVl8a42gR9sv5ICWUQ2ry7VS/LxC1jiz6sM5IwqRL4ORbsrvFPXD/VlbcgyHIgpDZRQ4RGcle1Lj4WMc+/LQOgk7R+aR3iIr9SEgNwm3wkl YVAStaff",
-    "slack": "https://hooks.slack.com/services/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",
-    "host_kv": {
-      "inf": {
-        "front": {
-          "kv": {
-            "PLATFORM_INF_HOST_ROLE": "front"
-          }
-        }
-      }
-    },
-    "cSize": "inf"
+    "cSize": "[parameters('size')]"
   }, 
   "resources": [
     {
@@ -50,38 +40,33 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(deployment().properties.templateLink.uri, 'master.json')]",
+          "uri": "[uri(deployment().properties.templateLink.uri, 'yva.resources.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
           "master": {
             "value": {
-              "prefix": "inf", 
-              "admin": "deploy",
               "adminkey": "[variables('adminkey')]",
-              "slack": "[variables('slack')]",
-              "name": "[parameters('name')]", 
-              "dlogin": "[parameters('docker').login]", 
-              "dpass": "[parameters('docker').pass]", 
-              "dserver": "[parameters('docker').url]", 
-              "applications": "inf", 
-              "initurl": "https://releases.yva.ai/inf/r0/version.json"
+              "name": "[parameters('name')]" 
             }
           }, 
           "appkv": {
             "value": {
-              "INF_MAIL": "account@yva.ai",
-              "INF_URL_0": "${INIT_AZURE_URL}"
+              "INIT_PLATFORM_USER": "[variables('admin')]",
+              "INIT_DOCKER_USER": "[parameters('yvalogin')]",
+              "INIT_DOCKER_PASS": "[parameters('yvapass')]",
+              "PLATFORM_DOCKER_CR": "cr0.yva.ai",
+              "INIT_AZURE_DPLNAME": "[parameters('name')]",
+              "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
+              "PLATFORM_UPDATE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json"
             }
           },
           "appkv_secure": {
             "value": {
-              "INF_SALT": "[uniqueString(concat(subscription().id))]"              
+              "YVA_SECURE_PLAIN": "[parameters('securestring')]",
+              "YVA_SALT": "[uniqueString(concat(subscription().id, parameters('securestring')))]"
             }
-          }, 
-          "hostkv": {
-            "value": "[variables('host_kv')[variables('cSize')]]"
-          }, 
+          },  
           "size": {
             "value": "[variables('cSize')]"
           },

@@ -24,32 +24,12 @@
     },
     "securestring": {
       "type": "securestring",
-      "minLength": 4,
+      "minLength": 8,
       "metadata": {
         "description": "Random secure string"
       }
-    },
-    "size": {
-      "type":"string",
-      "allowedValues": ["test", "small" ], 
-      "defaultValue": "small",
-      "metadata": {
-        "description": "Service size"
-      }
-    },
-    "custom": {
-      "type": "object",
-      "defaultValue": {},
-      "metadata": {
-        "description": "You can leave it empty"
-      }      
     }
   },
-  "variables": {
-    "admin": "yva",
-    "adminkey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7LfbMepWP5FNbATMmub6iV3rPPxVNB7IuJivBCQPIFcA5PGwv76ffi9UXTZgx9m2mzfCw1/yl5pZ82Anvsy6rJjduFevDXcb5EGIQQAFe+ipIzaIKBnUJL86Sb6ftym+VdNz7n/tuxidI4ou691uAl6PcIOekEn/KxlvpaXfB/OJKTP0sYxLK0Fe0s2EPn1nGXFe6WFcfOhDXWVKvRqFD+f6tFaOaWAgJm/ie31ODpbVl8a42gR9sv5ICWUQ2ry7VS/LxC1jiz6sM5IwqRL4ORbsrvFPXD/VlbcgyHIgpDZRQ4RGcle1Lj4WMc+/LQOgk7R+aR3iIr9SEgNwm3wkl YVAStaff",
-    "cSize": "[parameters('size')]"
-  }, 
   "resources": [
     {
       "name": "master",
@@ -58,38 +38,27 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(deployment().properties.templateLink.uri, 'yva.resources.json')]",
+          "uri": "[uri(deployment().properties.templateLink.uri, 'yva.arm.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "master": {
-            "value": {
-              "adminkey": "[variables('adminkey')]",
-              "name": "[parameters('name')]" 
-            }
+          "name": {
+            "value": "[parameters('name')]"
+          },
+          "yvalogin": {
+            "value": "[parameters('yvalogin')]"
           }, 
-          "appkv": {
-            "value": {
-              "INIT_PLATFORM_USER": "[variables('admin')]",
-              "INIT_DOCKER_USER": "[parameters('yvalogin')]",
-              "INIT_DOCKER_PASS": "[parameters('yvapass')]",
-              "PLATFORM_DOCKER_CR": "cr0.yva.ai",
-              "INIT_AZURE_DPLNAME": "[parameters('name')]",
-              "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
-              "PLATFORM_UPDATE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json"
-            }
+          "yvapass": {
+            "value": "[parameters('yvapass')]"
+          }, 
+          "securestring": {
+            "value": "[parameters('securestring')]"
           },
-          "appkv_secure": {
-            "value": {
-              "YVA_SECURE_PLAIN": "[parameters('securestring')]",
-              "YVA_SALT": "[uniqueString(concat(subscription().id, parameters('securestring')))]"
-            }
-          },  
           "size": {
-            "value": "[variables('cSize')]"
-          },
+            "value": "small"
+          }, 
           "custom": {
-            "value": "[parameters('custom')]"
+            "value": {}
           }
         }
       }
