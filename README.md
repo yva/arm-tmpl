@@ -1,4 +1,4 @@
-# ARM  templates for [yva.ai](yva.ai) azure deploy
+# ARM templates for YVA azure deploy
 
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
 
@@ -8,4 +8,4 @@
 * **yvalogin** & **yvapass**: credentials you recived from our sell department
 * **securestring**: password you provide 4 access to admin page 
 
-Please visit [yva.ai](yva.ai) for details
+Please visit [yva.ai](https://yva.ai) for details
