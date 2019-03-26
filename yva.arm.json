@@ -1,0 +1,90 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type":"string"
+    },
+    "yvalogin": {
+      "type": "string",
+      "minLength": 4
+    },
+    "yvapass": {
+      "type": "securestring",
+      "minLength": 8
+    },
+    "securestring": {
+      "type": "securestring",
+      "minLength": 8
+    },
+    "size": {
+      "type":"string",
+      "allowedValues": ["test", "small" ], 
+      "defaultValue": "small"
+    },
+    "custom": {
+      "type": "object",
+      "defaultValue": {}
+    }
+  },
+  "variables": {
+    "admin": "yva",
+    "adminkey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7LfbMepWP5FNbATMmub6iV3rPPxVNB7IuJivBCQPIFcA5PGwv76ffi9UXTZgx9m2mzfCw1/yl5pZ82Anvsy6rJjduFevDXcb5EGIQQAFe+ipIzaIKBnUJL86Sb6ftym+VdNz7n/tuxidI4ou691uAl6PcIOekEn/KxlvpaXfB/OJKTP0sYxLK0Fe0s2EPn1nGXFe6WFcfOhDXWVKvRqFD+f6tFaOaWAgJm/ie31ODpbVl8a42gR9sv5ICWUQ2ry7VS/LxC1jiz6sM5IwqRL4ORbsrvFPXD/VlbcgyHIgpDZRQ4RGcle1Lj4WMc+/LQOgk7R+aR3iIr9SEgNwm3wkl YVAStaff",
+    "cSize": "[parameters('size')]"
+  }, 
+  "resources": [
+    {
+      "name": "master",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'yva.resources.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "master": {
+            "value": {
+              "adminkey": "[variables('adminkey')]",
+              "name": "[parameters('name')]" 
+            }
+          }, 
+          "appkv": {
+            "value": {
+              "INIT_PLATFORM_USER": "[variables('admin')]",
+              "INIT_DOCKER_USER": "[parameters('yvalogin')]",
+              "INIT_DOCKER_PASS": "[parameters('yvapass')]",
+              "PLATFORM_DOCKER_CR": "cr0.yva.ai",
+              "INIT_AZURE_DPLNAME": "[parameters('name')]",
+              "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
+              "PLATFORM_UPDATE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json"
+            }
+          },
+          "appkv_secure": {
+            "value": {
+              "YVA_SECURE_PLAIN": "[parameters('securestring')]",
+              "YVA_SALT": "[uniqueString(concat(subscription().id, parameters('securestring')))]"
+            }
+          },  
+          "size": {
+            "value": "[variables('cSize')]"
+          },
+          "custom": {
+            "value": "[parameters('custom')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "uri": {
+      "type": "string",
+      "value": "[reference('master').outputs.uri.value]"
+    },
+    "ip": {
+      "type": "string",
+      "value": "[reference('master').outputs.ip.value]"
+    }
+  }
+}

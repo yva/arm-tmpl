@@ -1,0 +1,244 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "master": {
+      "type": "object", 
+      "defaultValue": {
+        "adminkey": "",
+        "name": ""
+      }
+    }, 
+    "appkv": {
+      "type": "object", 
+      "defaultValue": {}
+    },
+    "appkv_secure": {
+      "type": "secureObject", 
+      "defaultValue": {}
+    },
+    "size": {
+      "type": "string",
+      "allowedValues": ["small", "test"]
+    },
+    "custom": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "You can leave it blank"
+      }      
+    }
+  },
+  "variables": {
+    "prefix": "yva",
+    "admin": "yva", 
+    "rootResourceGroup": "[resourceGroup().name]",
+    "vnetName": "[concat(variables('prefix'),'_vnet')]",
+    "storageAccountName": "[concat(variables('prefix'),uniqueString(concat(variables('prefix'),subscription().id, '/resourceGroups/', variables('rootResourceGroup'))))]",
+    "masterkv": {
+      "kv": {
+        "PLATFORM_CONSUL_JOIN": "10.0.0.4",
+        "PLATFORM_CONSUL_EXPECT": 1,
+        "INIT_PLATFORM_USER": "[variables('admin')]"
+      }
+    },
+    "appkv": {
+      "kv": "[union(parameters('appkv'), parameters('appkv_secure'))]"
+    }, 
+    "params": "[union(variables('masterkv'), variables('appkv'))]",
+    "base": {
+      "vnetName":  "[variables('vnetName')]",
+      "vnetRef": "[resourceId(variables('rootResourceGroup'), 'Microsoft.Network/virtualNetworks', variables('vnetName'))]",      
+      "storageAccountName": "[variables('storageAccountName')]",
+      "storageRef": "[resourceId(variables('rootResourceGroup'), 'Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",      
+      "appPrefix": "[variables('prefix')]",
+      "adminUsername": "[variables('params').kv.INIT_PLATFORM_USER]",
+      "adminPublicKey": "[parameters('master').adminkey]",
+      "vmImage": {
+        "sku": "18.04-LTS",
+        "publisher": "Canonical",
+        "version": "latest",
+        "offer": "UbuntuServer"
+      }
+    },
+    "host_sets": {
+      "test": {
+        "front": {
+          "size": "Standard_A2m_v2",
+          "diskSizeGB": 128,
+          "prefix": "mngr",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr,az_process_ext",
+            "INIT_SWAP_SIZE": "8192",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
+          }
+        } 
+      },
+      "small": {
+        "front": {
+          "size": "Standard_E2_v3",
+          "diskSizeGB": 128,
+          "prefix": "mngr",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr",
+            "INIT_SWAP_SIZE": "16000",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
+          }
+        },
+        "exec": {
+          "size": "Standard_E2_v3",
+          "diskSizeGB": 128,
+          "prefix": "exec",
+          "count": 0,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_process_ext",
+            "INIT_SWAP_SIZE": "16000"
+          }
+        }        
+      }
+    },
+    "cSize": "[parameters('size')]", 
+    "hosts": "[variables('host_sets')[variables('cSize')]]"
+  }, 
+  "resources": [
+    {
+      "name": "vnet",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'yva.vnet.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "fqdnprefix": {
+            "value": "[parameters('master').name]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "generate-customdata",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["vnet"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'generate-customdata.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "v0": {
+            "value": {
+              "kv": {
+                "YVA_STORAGECONNECT": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('base').storageAccountName, ';AccountKey=', reference('vnet').outputs.strkey.value)]",
+                "YVA_STORAGE": "[variables('base').storageAccountName]",
+                "YVA_STORAGE_KEY": "[reference('vnet').outputs.strkey.value]",
+                "YVA_URL_0": "[reference('vnet').outputs.fqdn.value]"
+              }
+            }
+          },
+          "v1": {
+            "value": "[parameters('custom')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "mngr",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[contains(variables('hosts'), 'mngr')]",
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_internal.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "params": {
+            "value": "[union( json( concat('{\"kv\":', string(variables('hosts').mngr.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          },           
+          "vm": {
+            "value": "[variables('hosts').mngr]"
+          }
+        }
+      }
+    },
+    {
+      "name": "front",
+      "condition": "[contains(variables('hosts'), 'front')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_front.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "ipid": {
+            "value": "[reference('vnet').outputs.ipid.value]"
+          },
+          "params": {
+            "value": "[union(json( concat('{\"kv\":', string(variables('hosts').front.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          }, 
+          "vm": {
+            "value": "[variables('hosts').front]"
+          }          
+        }
+      }
+    },    
+    {
+      "name": "exec",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "condition": "[contains(variables('hosts'), 'exec')]",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_ss.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "params": {
+            "value": "[union(json( concat('{\"kv\":', string(variables('hosts').exec.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          }, 
+          "vm": {
+            "value": "[variables('hosts').exec]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "uri": {
+      "type": "string",
+      "value": "[reference('vnet').outputs.fqdn.value]"
+    },
+    "ip": {
+      "type": "string",
+      "value": "[reference('vnet').outputs.ip.value]"
+    }
+  }
+}

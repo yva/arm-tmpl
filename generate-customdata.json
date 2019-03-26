@@ -1,0 +1,34 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "v0": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "Description": "Custom Data Object"
+      }
+    },
+    "v1": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "Description": "Custom Data Object"
+      }
+    }
+  },
+  "variables": {
+    "res": "[union(parameters('v0'), parameters('v1'))]"
+  },
+  "resources": [],
+  "outputs": {
+    "customString": {
+      "type": "string",
+      "value": "[base64(string(variables('res')))]"
+    }, 
+    "customJson": {
+      "type": "string",
+      "value": "[string(variables('res'))]"
+    }
+  }
+}
