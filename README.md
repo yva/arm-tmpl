@@ -1,9 +1,6 @@
 # ARM  templates for [yva.ai](yva.ai) azure deploy
 
-<a href="https://azuredeploy.net?repository=https%3A%2F%2Fraw.githubusercontent.com%2Fyva%2Farm%2Fmaster%2Fyva.json" target="_blank">
-<img src="https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.png"/>
-</a>
-
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
 
 ## Template variables  
 
