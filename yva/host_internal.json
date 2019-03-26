@@ -1,0 +1,185 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "params": {
+      "type": "secureObject",
+      "defaultValue": {
+      }
+    },
+    "base": {
+      "type": "object",
+      "defaultValue": {
+      }      
+    },
+    "vm": {
+      "type": "object",
+      "metadata": {
+        "description": "Size of VM and swap size"
+      }
+    }
+  },
+  "variables": {
+    "hw0": {
+        "size": "Standard_B1ms", 
+        "count": 0,
+        "diskStorageType": "Standard_LRS",
+        "diskSizeGB": 128,
+        "startIP": 4 
+    },    
+    "host": {
+      "nicname": "[concat(parameters('vm').prefix, '_nic')]",
+      "vmname": "[concat(parameters('vm').prefix, '_vm')]",
+      "ipname": "[concat(parameters('vm').prefix, '_ip')]",
+      "avset": "[concat(parameters('vm').prefix, '_avs')]",
+      "vmhostname": "[parameters('vm').prefix]",
+      "subnet": "[parameters('vm').prefix]",
+      "hw": "[union(variables('hw0'), parameters('vm'))]"
+    },
+    "refs": {
+      "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]",
+      "avsetRef": "[resourceId('Microsoft.Compute/availabilitySets', variables('host').avset)]"
+    },
+    "env": "[base64(string(parameters('params')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/availabilitySets",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[providers('Microsoft.Compute', 'availabilitySets').apiVersions[0]]",
+      "name": "[variables('host').avset]",
+      "sku": {
+        "name": "Aligned"
+      },
+      "properties": {
+        "platformUpdateDomainCount": 3,
+        "platformFaultDomainCount": 3
+     }
+    },
+    {
+      "name": "[concat(variables('host').nicname, copyindex())]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+      ],
+      "copy": {
+        "count": "[variables('host').hw.count]",
+        "name": "nicLoop"
+      },
+      "type": "Microsoft.Network/networkInterfaces",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig",
+            "properties": {
+              "subnet": {
+                "id": "[variables('refs').subnetRef]"
+              },
+              "privateIPAddress": "[concat(substring(reference(variables('refs').subnetRef).properties.addressPrefix, 0, lastIndexOf(reference(variables('refs').subnetRef).properties.addressPrefix, '.') ), '.', string(add(copyindex(), int(variables('host').hw.startIP) )))]",
+              "privateIPAllocationMethod": "Static"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[concat(variables('host').vmname, copyIndex())]",
+      "apiVersion": "[providers('Microsoft.Compute', 'virtualMachines').apiVersions[0]]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('host').nicname, copyIndex())]",
+        "[variables('refs').avsetRef]"
+      ],
+      "copy": {
+        "count": "[variables('host').hw.count]",
+        "name": "virtualMachineLoop"
+      },
+      "type": "Microsoft.Compute/virtualMachines",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('host').hw.size]"
+        },
+        "osProfile": {
+          "adminUsername": "[parameters('base').adminUsername]",
+          "computerName": "[concat(variables('host').vmhostname, copyIndex())]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/',parameters('base').adminUsername,'/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('base').adminPublicKey]"
+                }
+              ]
+            }
+          } 
+        },
+        "availabilitySet": {
+          "id": "[variables('refs').avsetRef]"
+        },
+        "storageProfile": {
+          "imageReference": "[parameters('base').vmImage]",
+          "osDisk": {
+            "caching": "ReadWrite",
+            "managedDisk": {
+              "storageAccountType": "[variables('host').hw.diskStorageType]"
+            },
+            "createOption": "FromImage",
+            "name": "[concat('os-', variables('host').vmname, copyindex())]"
+          }, 
+          "dataDisks": [
+            {
+              "name": "[concat('data-', variables('host').vmname, copyindex())]",
+              "diskSizeGB": "[variables('host').hw.diskSizeGB]",
+              "lun": 0,
+              "managedDisk": {
+                "storageAccountType": "[variables('host').hw.diskStorageType]"
+              },
+              "createOption": "Empty"
+            }            
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('host').nicname, copyindex()))]",
+              "properties": {
+                "primary": true
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "[concat(variables('host').vmname, copyIndex(), '/extension')]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('host').vmname, copyIndex())]"
+      ],
+      "copy": {
+        "count": "[variables('host').hw.count]",
+        "name": "virtualMachineLoop"
+      },
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "properties": {
+        "publisher": "Microsoft.Azure.Extensions",
+        "type": "CustomScript",
+        "typeHandlerVersion": "2.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": 
+          [
+            "[uri(deployment().properties.templateLink.uri, 'init.sh')]" 
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('bash init.sh', ' ', variables('env'))]"
+        }
+      }
+    }
+  ], 
+  "outputs": {
+  }
+}
