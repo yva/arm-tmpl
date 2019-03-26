@@ -32,13 +32,13 @@
   },
   "resources": [
     {
-      "name": "master",
+      "name": "yvamain",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[uri(deployment().properties.templateLink.uri, 'yva.arm.json')]",
+          "uri": "https://raw.githubusercontent.com/yva/arm/master/yva/yva.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -67,11 +67,11 @@
   "outputs": {
     "uri": {
       "type": "string",
-      "value": "[reference('master').outputs.uri.value]"
+      "value": "[reference('yvamain').outputs.uri.value]"
     },
     "ip": {
       "type": "string",
-      "value": "[reference('master').outputs.ip.value]"
+      "value": "[reference('yvamain').outputs.ip.value]"
     }
   }
 }
