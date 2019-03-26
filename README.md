@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ARM templates for YVA azure deploy
 
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
@@ -10,7 +9,3 @@
 * **securestring**: password you provide 4 access to admin page 
 
 Please visit [yva.ai](https://yva.ai) for details
-=======
-# arm
-arm scripts for yva 
->>>>>>> b322a985fd60b5af96f8729170c4e600d405b378
