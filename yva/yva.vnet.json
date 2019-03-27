@@ -1,0 +1,107 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "fqdnprefix": {
+      "type": "string", 
+      "metadata": {
+        "description": "FQDN prefix"
+      }
+    }, 
+    "base": {
+      "type": "object",
+      "metadata": {
+        "description": "Object with common base attributes!"
+      }
+    }
+  }, 
+  "variables": {
+    "addressPrefix": "10.0.0.0/16",
+    "mngrSubnet": "mngr",
+    "mngrPrefix": "10.0.0.0/24",
+    "execSubnet": "exec",    
+    "execPrefix": "10.0.1.0/24"
+  }, 
+  "resources": [
+    {
+      "name": "[parameters('base').vnetName]",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "properties": {
+        "subnets": [
+          {
+            "name": "[variables('mngrSubnet')]",
+            "properties": {
+              "addressPrefix": "[variables('mngrPrefix')]"
+            }
+          }, 
+          {
+            "name": "[variables('execSubnet')]",
+            "properties": {
+              "addressPrefix": "[variables('execPrefix')]"
+            }
+          }
+        ],
+        "addressSpace": {
+          "addressPrefixes": [
+            "[variables('addressPrefix')]"
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[parameters('base').storageAccountName]",
+      "apiVersion": "2017-10-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+          "name": "Standard_LRS"
+      },
+      "kind": "Storage",
+      "properties": {
+        "encryption": {
+          "services": {
+            "blob":{
+              "enabled":true
+            },
+            "file":{
+              "enabled":true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        }
+      }
+    },
+    {
+      "name": "frontip",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "properties": {
+        "publicIPAllocationMethod": "Static", 
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('fqdnprefix')]"
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "strkey": {
+      "type": "string",
+      "value": "[string(listkeys(parameters('base').storageRef, '2017-10-01').keys[1].value)]"
+    }, 
+    "ip": {
+      "type": "string",
+      "value": "[reference('frontip').ipAddress]"
+    },
+    "fqdn": {
+      "type": "string",
+      "value": "[reference('frontip').dnsSettings.fqdn]"
+    },
+    "ipid": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Network/publicIPAddresses', 'frontip')]"
+    }
+  }
+}

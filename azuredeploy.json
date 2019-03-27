@@ -1,0 +1,77 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "name": {
+      "type":"string", 
+      "metadata": {
+        "description": "URL prefix (org name for example), use small latin letters and digits."
+      }
+    },
+    "yvalogin": {
+      "type": "string",
+      "minLength": 4,       
+      "metadata": {
+        "description": "Yva login"
+      }
+    },
+    "yvapass": {
+      "type": "securestring",
+      "minLength": 8, 
+      "metadata": {
+        "description": "Yva password"
+      }
+    },
+    "securestring": {
+      "type": "securestring",
+      "minLength": 8,
+      "metadata": {
+        "description": "Random secure string"
+      }
+    }
+  },
+  "resources": [
+    {
+      "name": "yvamain",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/yva/arm/master/yva/yva.json",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "name": {
+            "value": "[parameters('name')]"
+          },
+          "yvalogin": {
+            "value": "[parameters('yvalogin')]"
+          }, 
+          "yvapass": {
+            "value": "[parameters('yvapass')]"
+          }, 
+          "securestring": {
+            "value": "[parameters('securestring')]"
+          },
+          "size": {
+            "value": "small"
+          }, 
+          "custom": {
+            "value": {}
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "uri": {
+      "type": "string",
+      "value": "[reference('yvamain').outputs.uri.value]"
+    },
+    "ip": {
+      "type": "string",
+      "value": "[reference('yvamain').outputs.ip.value]"
+    }
+  }
+}
