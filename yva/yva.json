@@ -55,10 +55,10 @@
               "INIT_PLATFORM_USER": "[variables('admin')]",
               "INIT_DOCKER_USER": "[parameters('yvalogin')]",
               "INIT_DOCKER_PASS": "[parameters('yvapass')]",
-              "PLATFORM_DOCKER_CR": "cr0.yva.ai",
+              "PLATFORM_DOCKER_CR": "cr1.yva.ai",
               "INIT_AZURE_DPLNAME": "[parameters('name')]",
               "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
-              "PLATFORM_UPDATE_URL": "https://dl.yva.ai/public/releases/yva/release/yva.azure.json"
+              "PLATFORM_UPDATE_URL": "https://release.yva.ai/yva/azure/yva.azure.json"
             }
           },
           "appkv_secure": {
