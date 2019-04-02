@@ -1,16 +1,3 @@
-<<<<<<< HEAD
-# ARM templates for YVA azure deploy
-
-[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://azuredeploy.net/)
-
-## Template variables  
-
-* **name**: prefix of azure generated url 4 your Yva instance, for example *aztmp.westeurope.cloudapp.azure.com*, **name** is *aztmp*
-* **yvalogin** & **yvapass**: credentials you recived from our sell department
-* **securestring**: password you provide 4 access to admin page 
-
-Please visit [yva.ai](https://yva.ai) for details
-=======
 # ARM templates for Azure deployments
 
 Welcome to the GitHub repository for Yva.ai's ARM templates for Azure deployments. All of the templates in this repository have been developed by Yva.ai engineers.
@@ -31,4 +18,3 @@ securestring | The password that will be used to access the admin panel after de
 ## Support
 
 Please contact us at [support@yva.ai](mailto:support@yva.ai).
->>>>>>> 1a3dc446d638b80b0c3df1e0453517584cac3fb9
