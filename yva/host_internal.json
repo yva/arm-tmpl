@@ -75,7 +75,7 @@
               "subnet": {
                 "id": "[variables('refs').subnetRef]"
               },
-              "privateIPAddress": "[concat(substring(reference(variables('refs').subnetRef).properties.addressPrefix, 0, lastIndexOf(reference(variables('refs').subnetRef).properties.addressPrefix, '.') ), '.', string(add(copyindex(), int(variables('host').hw.startIP) )))]",
+              "privateIPAddress": "[concat(variables('host').hw.subnetPrefix, '.', string(add(copyindex(), int(variables('host').hw.startIP) )))]",
               "privateIPAllocationMethod": "Static"
             }
           }
