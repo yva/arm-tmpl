@@ -2,7 +2,7 @@
 
 Welcome to the GitHub repository for Yva.ai's ARM templates for Azure deployments. All of the templates in this repository have been developed by Yva.ai engineers.
 
-[![Deploy to Azure](https://azuredeploy.net/deploybutton.svg)](https://azuredeploy.net/)
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fyva%2Farm%2Fmaster%2Fazuredeploy.json" target="_blank"><img src="http://azuredeploy.net/deploybutton.png"/></a>
 
 ## Parameters
 
