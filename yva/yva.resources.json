@@ -78,7 +78,7 @@
       "small": {
         "front": {
           "size": "Standard_E2_v3",
-          "diskSizeGB": 128,
+          "diskSizeGB": 512,
           "prefix": "mngr",
           "count": 1,
           "kv": {
