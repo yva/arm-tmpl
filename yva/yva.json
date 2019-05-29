@@ -19,7 +19,7 @@
     },
     "size": {
       "type":"string",
-      "allowedValues": ["test", "small" ], 
+      "allowedValues": ["test", "dev", "small"], 
       "defaultValue": "small"
     },
     "custom": {
