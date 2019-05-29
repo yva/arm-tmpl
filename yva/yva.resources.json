@@ -19,7 +19,7 @@
     },
     "size": {
       "type": "string",
-      "allowedValues": ["small", "test"]
+      "allowedValues": ["test", "dev", "small"]
     },
     "custom": {
       "type": "object",
@@ -75,6 +75,19 @@
           }
         } 
       },
+      "dev": {
+        "front": {
+          "size": "Standard_D4_v3",
+          "diskSizeGB": 128,
+          "prefix": "mngr",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr,az_process_ext",
+            "INIT_SWAP_SIZE": "16000",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
+          }
+        } 
+      },      
       "small": {
         "front": {
           "size": "Standard_E2_v3",
