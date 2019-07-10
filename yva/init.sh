@@ -5,12 +5,12 @@ DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 export DEBIAN_FRONTEND=noninteractive
 
 #install packets, make retrys on update it sometimes fails at azure
-apt-get update -y
+apt-get update -y || true 
 for p in wget jq unzip curl; do
   for i in $(seq 0 10); do 
     apt-get install -y "$p" && break;
     sleep 10s
-    apt-get update -y
+    apt-get update -y || true
   done
 done
 
