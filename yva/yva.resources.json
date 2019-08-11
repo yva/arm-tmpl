@@ -69,7 +69,7 @@
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr,az_process_ext",
+            "PLATFORM_UPDATE_HOSTROLE": "az_standalone",
             "INIT_SWAP_SIZE": "8192",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
@@ -82,7 +82,7 @@
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr,az_process_ext",
+            "PLATFORM_UPDATE_HOSTROLE": "az_standalone",
             "INIT_SWAP_SIZE": "16000",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
