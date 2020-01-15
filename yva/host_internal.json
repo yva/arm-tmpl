@@ -31,31 +31,16 @@
       "nicname": "[concat(parameters('vm').prefix, '_nic')]",
       "vmname": "[concat(parameters('vm').prefix, '_vm')]",
       "ipname": "[concat(parameters('vm').prefix, '_ip')]",
-      "avset": "[concat(parameters('vm').prefix, '_avs')]",
       "vmhostname": "[parameters('vm').prefix]",
       "subnet": "[parameters('vm').prefix]",
       "hw": "[union(variables('hw0'), parameters('vm'))]"
     },
     "refs": {
-      "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]",
-      "avsetRef": "[resourceId('Microsoft.Compute/availabilitySets', variables('host').avset)]"
+      "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]"
     },
     "env": "[base64(string(parameters('params')))]"
   },
   "resources": [
-    {
-      "type": "Microsoft.Compute/availabilitySets",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[providers('Microsoft.Compute', 'availabilitySets').apiVersions[0]]",
-      "name": "[variables('host').avset]",
-      "sku": {
-        "name": "Aligned"
-      },
-      "properties": {
-        "platformUpdateDomainCount": 3,
-        "platformFaultDomainCount": 3
-     }
-    },
     {
       "name": "[concat(variables('host').nicname, copyindex())]",
       "apiVersion": "2015-06-15",
@@ -87,8 +72,7 @@
       "apiVersion": "[providers('Microsoft.Compute', 'virtualMachines').apiVersions[0]]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('host').nicname, copyIndex())]",
-        "[variables('refs').avsetRef]"
+        "[concat('Microsoft.Network/networkInterfaces/', variables('host').nicname, copyIndex())]"
       ],
       "copy": {
         "count": "[variables('host').hw.count]",
@@ -113,9 +97,6 @@
               ]
             }
           } 
-        },
-        "availabilitySet": {
-          "id": "[variables('refs').avsetRef]"
         },
         "storageProfile": {
           "imageReference": "[parameters('base').vmImage]",

@@ -33,7 +33,6 @@
       "diskSizeGB": 128
     },
     "host": {
-      "avset": "[concat(parameters('vm').prefix, '_avs')]",
       "secureGroup": "[concat(parameters('vm').prefix,'_sg')]",
       "nicname": "[concat(parameters('vm').prefix, '_nic')]",
       "vmname": "[concat(parameters('vm').prefix, '_vm')]",
@@ -43,7 +42,6 @@
     },
     "refs": {
       "secureRef": "[resourceId('Microsoft.Network/networkSecurityGroups', concat(variables('host').secureGroup))]",
-      "avsetRef": "[resourceId('Microsoft.Compute/availabilitySets', variables('host').avset)]",
       "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]"
     },
     "env": "[base64(string(parameters('params')))]"
@@ -144,19 +142,6 @@
       }
     },
     {
-      "type": "Microsoft.Compute/availabilitySets",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[providers('Microsoft.Compute', 'availabilitySets').apiVersions[0]]",
-      "name": "[variables('host').avset]",
-      "sku": {
-        "name": "Aligned"
-      },
-      "properties": {
-        "platformUpdateDomainCount": 3,
-        "platformFaultDomainCount": 3
-     }
-    },
-    {
       "name": "[variables('host').nicname]",
       "apiVersion": "2015-06-15",
       "location": "[resourceGroup().location]",
@@ -189,8 +174,7 @@
       "apiVersion": "[providers('Microsoft.Compute', 'virtualMachines').apiVersions[0]]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('host').nicname)]",
-        "[variables('refs').avsetRef]"
+        "[concat('Microsoft.Network/networkInterfaces/', variables('host').nicname)]"
       ],
       "type": "Microsoft.Compute/virtualMachines",
       "properties": {
@@ -211,9 +195,6 @@
               ]
             }
           }
-        },
-        "availabilitySet": {
-          "id": "[variables('refs').avsetRef]"
         },
         "storageProfile": {
           "imageReference": "[parameters('base').vmImage]",
