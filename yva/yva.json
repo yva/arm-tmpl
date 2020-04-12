@@ -22,6 +22,10 @@
       "allowedValues": ["test", "dev", "small"], 
       "defaultValue": "small"
     },
+    "adminkey": {
+      "type":"string",
+      "defaultValue": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDNtFKJz4w27lGjc/HE7LnsuP6m0Ug3nLXJyHmWLtzpuOiy/ukk9o/FVD+oYN69UeOfj+txyhFpCBKh6GM+vHJretI2qbrBtx9dUrprEP+rsyO+xkWP5HPnF4ukCmtijIbx1+Yc72vkn/a3CpW/AABeP+kKr/advny0cObuImv+yTHY6XyGHV+tMP6QkJ/cIgAiaccc8Sv2YTBSiV+fat3iwIy+oL4p60lcRonVxOM40ceIiT8aOz5jOtLoic8ODqTWuadJogQVuh+1o/E7i7rSKfXn9kAG8wkY6CFjv8mbiMshlFizhpam08BZHcETrvIl5OtZTPpHibrZqI/RE337OQ74N/eGhiQ5hBdCMK56DhdJeBMTg3voFhFd2C45z/en8t54UOZB6CV5vQEq9yL69h5ZEvwmBDMtXenktaSJrbFKbWgkMnLsFHnAubN1BRJk2Od+x3oyglXsJq6XxjM6qLNf1XkROZLN5RgkAH1KF7XejzhN6Bl2Z29Z2XUWae/dVoIQDMX/e68ex0LOf8UE1bqun/7r9MJl9E7rTpI8s3+vNplY3TL3pIkeq4W2jawdNcuF9BUs1gOzW4UHWgMo5zzv5VslIi7gKcLA2LL/BIBzMvrF/yNXA+WqRUp0Yg3lIzYmlL/A2Q6rarMzPqmEXIlPHfbEzV4mBef/DMifJQ== yva@stuff"
+    },    
     "custom": {
       "type": "object",
       "defaultValue": {}
@@ -29,7 +33,6 @@
   },
   "variables": {
     "admin": "yva",
-    "adminkey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7LfbMepWP5FNbATMmub6iV3rPPxVNB7IuJivBCQPIFcA5PGwv76ffi9UXTZgx9m2mzfCw1/yl5pZ82Anvsy6rJjduFevDXcb5EGIQQAFe+ipIzaIKBnUJL86Sb6ftym+VdNz7n/tuxidI4ou691uAl6PcIOekEn/KxlvpaXfB/OJKTP0sYxLK0Fe0s2EPn1nGXFe6WFcfOhDXWVKvRqFD+f6tFaOaWAgJm/ie31ODpbVl8a42gR9sv5ICWUQ2ry7VS/LxC1jiz6sM5IwqRL4ORbsrvFPXD/VlbcgyHIgpDZRQ4RGcle1Lj4WMc+/LQOgk7R+aR3iIr9SEgNwm3wkl YVAStaff",
     "cSize": "[parameters('size')]"
   }, 
   "resources": [
@@ -46,7 +49,7 @@
         "parameters": {
           "master": {
             "value": {
-              "adminkey": "[variables('adminkey')]",
+              "adminkey": "[parameters('adminkey')]",
               "name": "[parameters('name')]" 
             }
           }, 
