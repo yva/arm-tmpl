@@ -18,8 +18,3 @@ securestring | The password that will be used to access the admin panel after de
 ## Support
 
 Please contact us at [support@yva.ai](mailto:support@yva.ai).
-
-
-## Disclaimer
-
-Any use, distribution or reproduction of this code from the current repository by unintended users, is not authorized and may be unlawful
