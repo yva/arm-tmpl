@@ -28,6 +28,12 @@
       "metadata": {
         "description": "Random secure string"
       }
+    },
+    "size": {
+      "type": "string",
+      "metadata": {
+        "description": "VM size: small, medium, large, xl"
+      }
     }
   },
   "resources": [
@@ -38,7 +44,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/yva/arm/master/yva/yva.json",
+          "uri": "https://raw.githubusercontent.com/yva/arm/azure-size/yva/yva.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -55,7 +61,7 @@
             "value": "[parameters('securestring')]"
           },
           "size": {
-            "value": "small"
+            "value": "[parameters('size')]"
           }, 
           "custom": {
             "value": {}
