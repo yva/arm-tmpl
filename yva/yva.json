@@ -60,7 +60,8 @@
               "INIT_DOCKER_USER": "[parameters('yvalogin')]",
               "INIT_AZURE_DPLNAME": "[parameters('name')]",
               "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
-              "PLATFORM_UPDATE_URL": "https://yvadev.blob.core.windows.net/public/yva/dbg/devops-391/yva.azure.json"
+              "PLATFORM_UPDATE_URL": "https://release.yva.ai/yva/azure/yva.azure.json"
+
             }
           },
           "appkv_secure": {
