@@ -44,7 +44,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/yva/arm/master/yva/yva.json",
+          "uri": "https://raw.githubusercontent.com/yva/arm/DEVOPS-419/yva/yva.json",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
