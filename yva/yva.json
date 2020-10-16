@@ -19,7 +19,7 @@
     },
     "size": {
       "type":"string",
-      "allowedValues": ["test", "dev", "small"], 
+      "allowedValues": ["test", "dev", "small", "medium", "large", "xl"],
       "defaultValue": "small"
     },
     "adminkey": {
@@ -61,6 +61,7 @@
               "INIT_AZURE_DPLNAME": "[parameters('name')]",
               "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
               "PLATFORM_UPDATE_URL": "https://release.yva.ai/yva/azure/yva.azure.json"
+
             }
           },
           "appkv_secure": {

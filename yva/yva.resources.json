@@ -19,7 +19,7 @@
     },
     "size": {
       "type": "string",
-      "allowedValues": ["test", "dev", "small"]
+      "allowedValues": ["test", "dev", "small", "medium", "large", "xl"]
     },
     "custom": {
       "type": "object",
@@ -95,7 +95,7 @@
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr",
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_small",
             "INIT_SWAP_SIZE": "16000",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
@@ -106,10 +106,210 @@
           "prefix": "exec",
           "count": 0,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_process_ext",
+            "PLATFORM_UPDATE_HOSTROLE": "az_process_ext_small",
             "INIT_SWAP_SIZE": "16000"
           }
-        }        
+        }
+      },
+      "medium": {
+        "front": {
+          "size": "Standard_F8s_v2",
+          "diskSizeGB": 512,
+          "prefix": "mngr",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_medium",
+            "INIT_SWAP_SIZE": "16000",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
+          }
+        },
+        "exec": {
+          "size": "Standard_D2_v3",
+          "diskSizeGB": 128,
+          "prefix": "exec",
+          "count": 0,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_exec_medium",
+            "INIT_SWAP_SIZE": "16000"
+          }
+        },
+        "gpdb": {
+          "size": "Standard_D4s_v3",
+          "diskSizeGB": 256,
+          "prefix": "gpdb",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 36,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_gpdb_medium"
+          }
+        }
+      },
+      "large": {
+        "front": {
+          "size": "Standard_F4s_v2",
+          "diskSizeGB": 512,
+          "prefix": "mngr",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_large",
+            "INIT_SWAP_SIZE": "16000",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
+          }
+        },
+        "exec": {
+          "size": "Standard_D2_v3",
+          "diskSizeGB": 128,
+          "prefix": "exec",
+          "count": 0,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_exec_large",
+            "INIT_SWAP_SIZE": "16000"
+          }
+        },
+        "gpdb": {
+          "size": "Standard_D4s_v3",
+          "diskSizeGB": 256,
+          "prefix": "gpdb",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 36,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_gpdb_large"
+          }
+        },
+        "mdbsh0": {
+          "size": "Standard_D4s_v3",
+          "diskSizeGB": 256,
+          "prefix": "mdbsh0",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mdbsh_large",
+            "INIT_SWAP_SIZE": "8192"
+          }
+        },
+        "hbase": {
+          "size": "Standard_F4s_v2",
+          "diskSizeGB": 512,
+          "prefix": "hbase",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 60,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_large",
+            "INIT_SWAP_SIZE": "8192"
+          }
+        },
+        "app": {
+          "size": "Standard_D2_v3",
+          "diskSizeGB": 256,
+          "prefix": "app",
+          "count": 1,
+          "subnetPrefix": "10.0.4",
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_app_large",
+            "INIT_SWAP_SIZE": "8192"
+          }
+        }
+      },
+      "xl": {
+        "front": {
+          "size": "Standard_A4_v2",
+          "diskSizeGB": 128,
+          "prefix": "front",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_front_xl",
+            "INIT_SWAP_SIZE": "2048"
+          }
+        },
+        "mngr": {
+          "size": "Standard_D2_v3",
+          "diskSizeGB": 256,
+          "subnetPrefix": "10.0.0",
+          "prefix": "mngr",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_xl",
+            "INIT_SWAP_SIZE": "8192",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
+          }
+        },
+        "mdbsh0": {
+          "size": "Standard_DS4_v2",
+          "diskSizeGB": 256,
+          "prefix": "mdbsh0",
+          "count": 2,
+          "subnetPrefix": "10.0.2",
+          "hostkv": [
+            {
+              "PLATFORM_UPDATE_HOSTROLE": "az_mdbs0h0_xl"
+            },
+            {
+              "PLATFORM_UPDATE_HOSTROLE": "az_mdbs0h1_xl"
+            }
+          ],
+          "kv": {
+            "INIT_SWAP_SIZE": "8192"
+          }
+        },
+        "rmq0": {
+          "size": "Standard_D2_v3",
+          "diskSizeGB": 256,
+          "prefix": "rmq0",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 20,
+          "kv": {
+            "INIT_SWAP_SIZE": "8192",
+            "PLATFORM_UPDATE_HOSTROLE": "az_rmq_xl"
+          }
+        },
+        "gpdb": {
+          "size": "Standard_D8s_v3",
+          "diskSizeGB": 256,
+          "prefix": "gpdb",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 36,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_gpdb_xl"
+          }
+        },
+        "hbase": {
+          "size": "Standard_A4_v2",
+          "diskSizeGB": 512,
+          "prefix": "hbase",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 60,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_xl",
+            "INIT_SWAP_SIZE": "8192"
+          }
+        },
+        "app": {
+          "size": "Standard_D3_v2",
+          "diskSizeGB": 256,
+          "prefix": "app",
+          "count": 1,
+          "subnetPrefix": "10.0.4",
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_app_xl",
+            "INIT_SWAP_SIZE": "8192"
+          }
+        },
+        "exec": {
+          "size": "Standard_D2_v3",
+          "diskSizeGB": 256,
+          "prefix": "exec",
+          "count": 0,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_exec_xl",
+            "INIT_SWAP_SIZE": "16000"
+          }
+        }
       }
     },
     "cSize": "[parameters('size')]", 
@@ -239,6 +439,131 @@
           }, 
           "vm": {
             "value": "[variables('hosts').exec]"
+          }
+        }
+      }
+    },
+    {
+      "name": "gpdb",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[contains(variables('hosts'), 'gpdb')]",
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_internal.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "params": {
+            "value": "[union( json( concat('{\"kv\":', string(variables('hosts').gpdb.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          },           
+          "vm": {
+            "value": "[variables('hosts').gpdb]"
+          }
+        }
+      }
+    },
+    {
+      "name": "mdbsh0",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[contains(variables('hosts'), 'mdbsh0')]",
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_internal.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "params": {
+            "value": "[union( json( concat('{\"kv\":', string(variables('hosts').mdbsh0.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          },           
+          "vm": {
+            "value": "[variables('hosts').mdbsh0]"
+          }
+        }
+      }
+    },
+    {
+      "name": "hbase",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[contains(variables('hosts'), 'hbase')]",
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_internal.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "params": {
+            "value": "[union( json( concat('{\"kv\":', string(variables('hosts').hbase.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          },           
+          "vm": {
+            "value": "[variables('hosts').hbase]"
+          }
+        }
+      }
+    },
+    {
+      "name": "app",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[contains(variables('hosts'), 'app')]",
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_internal.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "params": {
+            "value": "[union( json( concat('{\"kv\":', string(variables('hosts').app.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          },           
+          "vm": {
+            "value": "[variables('hosts').app]"
+          }
+        }
+      }
+    },
+    {
+      "name": "rmq0",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[contains(variables('hosts'), 'rmq0')]",
+      "apiVersion": "2015-01-01",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_internal.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "params": {
+            "value": "[union( json( concat('{\"kv\":', string(variables('hosts').rmq0.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          },           
+          "vm": {
+            "value": "[variables('hosts').rmq0]"
           }
         }
       }
