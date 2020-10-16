@@ -20,7 +20,19 @@
     "mngrSubnet": "mngr",
     "mngrPrefix": "10.0.0.0/24",
     "execSubnet": "exec",    
-    "execPrefix": "10.0.1.0/24"
+    "execPrefix": "10.0.1.0/24",
+    "gpdbSubnet": "gpdb",    
+    "gpdbPrefix": "10.0.2.32/28",
+    "mdbsh0Subnet": "mdbsh0",    
+    "mdbsh0Prefix": "10.0.2.0/28",
+    "hbaseSubnet": "hbase",
+    "hbasePrefix": "10.0.2.48/28",
+    "appSubnet": "app",
+    "appPrefix": "10.0.4.0/24",
+    "rmqSubnet": "rmq0",    
+    "rmqPrefix": "10.0.2.16/28",
+    "frontSubnet": "front",
+    "frontPrefix": "10.0.3.0/24"
   }, 
   "resources": [
     {
@@ -40,6 +52,42 @@
             "name": "[variables('execSubnet')]",
             "properties": {
               "addressPrefix": "[variables('execPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('gpdbSubnet')]",
+            "properties": {
+              "addressPrefix": "[variables('gpdbPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('mdbsh0Subnet')]",
+            "properties": {
+              "addressPrefix": "[variables('mdbsh0Prefix')]"
+            }
+          },
+          {
+            "name": "[variables('hbaseSubnet')]",
+            "properties": {
+              "addressPrefix": "[variables('hbasePrefix')]"
+            }
+          },
+          {
+            "name": "[variables('appSubnet')]",
+            "properties": {
+              "addressPrefix": "[variables('appPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('rmqSubnet')]",
+            "properties": {
+              "addressPrefix": "[variables('rmqPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('frontSubnet')]",
+            "properties": {
+              "addressPrefix": "[variables('frontPrefix')]"
             }
           }
         ],
