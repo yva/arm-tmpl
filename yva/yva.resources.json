@@ -197,8 +197,7 @@
           "subnetPrefix": "10.0.2",
           "startIP": 60,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_large",
-            "INIT_SWAP_SIZE": "8192"
+            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_large"
           }
         },
         "app": {
@@ -285,8 +284,7 @@
           "subnetPrefix": "10.0.2",
           "startIP": 60,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_xl",
-            "INIT_SWAP_SIZE": "8192"
+            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_xl"
           }
         },
         "app": {
