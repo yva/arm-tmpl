@@ -90,7 +90,7 @@
       },      
       "small": {
         "front": {
-          "size": "Standard_E2_v3",
+          "size": "Standard_F8s_v2",
           "diskSizeGB": 512,
           "prefix": "mngr",
           "count": 1,
