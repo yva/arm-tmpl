@@ -19,7 +19,7 @@
     },
     "size": {
       "type":"string",
-      "allowedValues": ["test", "dev", "small", "medium", "large", "xl"],
+      "allowedValues": ["dev", "small", "medium", "large", "xl"],
       "defaultValue": "small"
     },
     "adminkey": {
