@@ -246,7 +246,7 @@
           }
         },
         "rmq0": {
-          "size": "Standard_D2_v3",
+          "size": "Standard_D2s_v3",
           "diskSizeGB": 256,
           "diskStorageType": "Premium_LRS",
           "prefix": "rmq0",
@@ -271,7 +271,7 @@
           }
         },
         "hbase": {
-          "size": "Standard_A4_v2",
+          "size": "Standard_F4s_v2",
           "diskSizeGB": 512,
           "diskStorageType": "Premium_LRS",
           "prefix": "hbase",
