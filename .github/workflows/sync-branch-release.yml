@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Merge release-* -> develop
-        uses: devmasx/merge-branch@v1.3.0
+        uses: devmasx/merge-branch@v1.3.1
         with:
           type: now
           head_to_merge: ${{ github.ref }}

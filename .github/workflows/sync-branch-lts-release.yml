@@ -1,17 +1,17 @@
-name: sync-branch-master
+name: sync-branch-lts-release
 on:
   push:
     branches:
-      - 'master'
+      - 'v*'
 jobs:
   sync-branch:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Merge master -> develop
+      - name: Merge v* -> master
         uses: devmasx/merge-branch@v1.3.1
         with:
           type: now
           head_to_merge: ${{ github.ref }}
-          target_branch: develop
+          target_branch: master
           github_token: ${{ secrets.GH_REPO }}
