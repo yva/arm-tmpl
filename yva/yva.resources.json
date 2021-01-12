@@ -123,6 +123,7 @@
         "gpdb": {
           "size": "Standard_D4s_v3",
           "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
           "prefix": "gpdb",
           "count": 1,
           "subnetPrefix": "10.0.2",
@@ -157,6 +158,7 @@
         "gpdb": {
           "size": "Standard_D4s_v3",
           "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
           "prefix": "gpdb",
           "count": 1,
           "subnetPrefix": "10.0.2",
@@ -168,6 +170,7 @@
         "mdbsh0": {
           "size": "Standard_D4s_v3",
           "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
           "prefix": "mdbsh0",
           "count": 1,
           "subnetPrefix": "10.0.2",
@@ -179,6 +182,7 @@
         "hbase": {
           "size": "Standard_F4s_v2",
           "diskSizeGB": 512,
+          "diskStorageType": "Premium_LRS",
           "prefix": "hbase",
           "count": 1,
           "subnetPrefix": "10.0.2",
@@ -225,6 +229,7 @@
         "mdbsh0": {
           "size": "Standard_DS4_v2",
           "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
           "prefix": "mdbsh0",
           "count": 2,
           "subnetPrefix": "10.0.2",
@@ -243,6 +248,7 @@
         "rmq0": {
           "size": "Standard_D2_v3",
           "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
           "prefix": "rmq0",
           "count": 1,
           "subnetPrefix": "10.0.2",
@@ -255,6 +261,7 @@
         "gpdb": {
           "size": "Standard_D8s_v3",
           "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
           "prefix": "gpdb",
           "count": 1,
           "subnetPrefix": "10.0.2",
@@ -266,6 +273,7 @@
         "hbase": {
           "size": "Standard_A4_v2",
           "diskSizeGB": 512,
+          "diskStorageType": "Premium_LRS",
           "prefix": "hbase",
           "count": 1,
           "subnetPrefix": "10.0.2",
