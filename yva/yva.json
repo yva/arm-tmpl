@@ -60,7 +60,8 @@
               "INIT_DOCKER_USER": "[parameters('yvalogin')]",
               "INIT_AZURE_DPLNAME": "[parameters('name')]",
               "INIT_DEBIAN_CHROOT": "[parameters('name')]", 
-              "PLATFORM_UPDATE_URL": "https://release.yva.ai/yva/azure/yva.azure.json"
+              "PLATFORM_UPDATE_URL": "https://release.yva.ai/yva/azure/yva.azure.json",
+              "GLOBAL_LEDGER_URL": "https://yval.westeurope.cloudapp.azure.com:12666/api/replication/teams"
 
             }
           },
