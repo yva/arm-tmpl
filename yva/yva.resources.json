@@ -3,35 +3,35 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "master": {
-      "type": "object", 
+      "type": "object",
       "defaultValue": {
         "adminkey": "",
         "name": ""
       }
-    }, 
+    },
     "appkv": {
-      "type": "object", 
+      "type": "object",
       "defaultValue": {}
     },
     "appkv_secure": {
-      "type": "secureObject", 
+      "type": "secureObject",
       "defaultValue": {}
     },
     "size": {
       "type": "string",
-      "allowedValues": ["dev", "small", "medium", "large", "xl"]
+      "allowedValues": [ "dev", "small", "medium", "large", "xl" ]
     },
     "custom": {
       "type": "object",
       "defaultValue": {},
       "metadata": {
         "description": "You can leave it blank"
-      }      
+      }
     }
   },
   "variables": {
     "prefix": "yva",
-    "admin": "yva", 
+    "admin": "yva",
     "rootResourceGroup": "[resourceGroup().name]",
     "vnetName": "[concat(variables('prefix'),'_vnet')]",
     "storageAccountName": "[concat(variables('prefix'),uniqueString(concat(variables('prefix'),subscription().id, '/resourceGroups/', variables('rootResourceGroup'))))]",
@@ -44,13 +44,13 @@
     },
     "appkv": {
       "kv": "[union(parameters('appkv'), parameters('appkv_secure'))]"
-    }, 
+    },
     "params": "[union(variables('masterkv'), variables('appkv'))]",
     "base": {
-      "vnetName":  "[variables('vnetName')]",
-      "vnetRef": "[resourceId(variables('rootResourceGroup'), 'Microsoft.Network/virtualNetworks', variables('vnetName'))]",      
+      "vnetName": "[variables('vnetName')]",
+      "vnetRef": "[resourceId(variables('rootResourceGroup'), 'Microsoft.Network/virtualNetworks', variables('vnetName'))]",
       "storageAccountName": "[variables('storageAccountName')]",
-      "storageRef": "[resourceId(variables('rootResourceGroup'), 'Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",      
+      "storageRef": "[resourceId(variables('rootResourceGroup'), 'Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
       "appPrefix": "[variables('prefix')]",
       "adminUsername": "[variables('params').kv.INIT_PLATFORM_USER]",
       "adminPublicKey": "[parameters('master').adminkey]",
@@ -69,12 +69,12 @@
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr,az_process_ext",
+            "PLATFORM_UPDATE_HOSTROLE": "mngr,process_ext",
             "INIT_SWAP_SIZE": "16000",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
-        } 
-      },      
+        }
+      },
       "small": {
         "front": {
           "size": "Standard_F8s_v2",
@@ -82,7 +82,7 @@
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_small",
+            "PLATFORM_UPDATE_HOSTROLE": "mngr_small",
             "INIT_SWAP_SIZE": "16000",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
@@ -93,7 +93,7 @@
           "prefix": "exec",
           "count": 0,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_process_ext_small",
+            "PLATFORM_UPDATE_HOSTROLE": "process_ext_small",
             "INIT_SWAP_SIZE": "16000"
           }
         }
@@ -105,7 +105,7 @@
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_medium",
+            "PLATFORM_UPDATE_HOSTROLE": "mngr_medium",
             "INIT_SWAP_SIZE": "16000",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
@@ -116,7 +116,7 @@
           "prefix": "exec",
           "count": 0,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_exec_medium",
+            "PLATFORM_UPDATE_HOSTROLE": "exec_medium",
             "INIT_SWAP_SIZE": "16000"
           }
         },
@@ -129,7 +129,7 @@
           "subnetPrefix": "10.0.2",
           "startIP": 36,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_gpdb_medium"
+            "PLATFORM_UPDATE_HOSTROLE": "gpdb_medium"
           }
         }
       },
@@ -140,7 +140,7 @@
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_large",
+            "PLATFORM_UPDATE_HOSTROLE": "mngr_large",
             "INIT_SWAP_SIZE": "16000",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
@@ -151,7 +151,7 @@
           "prefix": "exec",
           "count": 0,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_exec_large",
+            "PLATFORM_UPDATE_HOSTROLE": "exec_large",
             "INIT_SWAP_SIZE": "16000"
           }
         },
@@ -164,7 +164,7 @@
           "subnetPrefix": "10.0.2",
           "startIP": 36,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_gpdb_large"
+            "PLATFORM_UPDATE_HOSTROLE": "gpdb_large"
           }
         },
         "mdbsh0": {
@@ -175,7 +175,7 @@
           "count": 1,
           "subnetPrefix": "10.0.2",
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mdbsh_large",
+            "PLATFORM_UPDATE_HOSTROLE": "mdbsh_large",
             "INIT_SWAP_SIZE": "8192"
           }
         },
@@ -188,7 +188,7 @@
           "subnetPrefix": "10.0.2",
           "startIP": 60,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_large"
+            "PLATFORM_UPDATE_HOSTROLE": "hbase_large"
           }
         },
         "app": {
@@ -198,7 +198,7 @@
           "count": 1,
           "subnetPrefix": "10.0.4",
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_app_large",
+            "PLATFORM_UPDATE_HOSTROLE": "app_large",
             "INIT_SWAP_SIZE": "8192"
           }
         }
@@ -210,7 +210,7 @@
           "prefix": "front",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_front_xl",
+            "PLATFORM_UPDATE_HOSTROLE": "front_xl",
             "INIT_SWAP_SIZE": "2048"
           }
         },
@@ -221,7 +221,7 @@
           "prefix": "mngr",
           "count": 1,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_xl",
+            "PLATFORM_UPDATE_HOSTROLE": "mngr_xl",
             "INIT_SWAP_SIZE": "8192",
             "INIT_NOTIFY_BOOTSTRAP": "true"
           }
@@ -235,10 +235,10 @@
           "subnetPrefix": "10.0.2",
           "hostkv": [
             {
-              "PLATFORM_UPDATE_HOSTROLE": "az_mdbs0h0_xl"
+              "PLATFORM_UPDATE_HOSTROLE": "mdbs0h0_xl"
             },
             {
-              "PLATFORM_UPDATE_HOSTROLE": "az_mdbs0h1_xl"
+              "PLATFORM_UPDATE_HOSTROLE": "mdbs0h1_xl"
             }
           ],
           "kv": {
@@ -255,7 +255,7 @@
           "startIP": 20,
           "kv": {
             "INIT_SWAP_SIZE": "8192",
-            "PLATFORM_UPDATE_HOSTROLE": "az_rmq_xl"
+            "PLATFORM_UPDATE_HOSTROLE": "rmq_xl"
           }
         },
         "gpdb": {
@@ -267,7 +267,7 @@
           "subnetPrefix": "10.0.2",
           "startIP": 36,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_gpdb_xl"
+            "PLATFORM_UPDATE_HOSTROLE": "gpdb_xl"
           }
         },
         "hbase": {
@@ -279,7 +279,7 @@
           "subnetPrefix": "10.0.2",
           "startIP": 60,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_xl"
+            "PLATFORM_UPDATE_HOSTROLE": "hbase_xl"
           }
         },
         "app": {
@@ -289,7 +289,7 @@
           "count": 1,
           "subnetPrefix": "10.0.4",
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_app_xl",
+            "PLATFORM_UPDATE_HOSTROLE": "app_xl",
             "INIT_SWAP_SIZE": "8192"
           }
         },
@@ -299,15 +299,15 @@
           "prefix": "exec",
           "count": 0,
           "kv": {
-            "PLATFORM_UPDATE_HOSTROLE": "az_exec_xl",
+            "PLATFORM_UPDATE_HOSTROLE": "exec_xl",
             "INIT_SWAP_SIZE": "16000"
           }
         }
       }
     },
-    "cSize": "[parameters('size')]", 
+    "cSize": "[parameters('size')]",
     "hosts": "[variables('host_sets')[variables('cSize')]]"
-  }, 
+  },
   "resources": [
     {
       "name": "vnet",
@@ -334,7 +334,7 @@
       "name": "generate-customdata",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "dependsOn": ["vnet"],
+      "dependsOn": [ "vnet" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -363,7 +363,7 @@
       "type": "Microsoft.Resources/deployments",
       "condition": "[contains(variables('hosts'), 'mngr')]",
       "apiVersion": "2015-01-01",
-      "dependsOn": ["vnet", "generate-customdata"],
+      "dependsOn": [ "vnet", "generate-customdata" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -376,7 +376,7 @@
           },
           "base": {
             "value": "[variables('base')]"
-          },           
+          },
           "vm": {
             "value": "[variables('hosts').mngr]"
           }
@@ -388,7 +388,7 @@
       "condition": "[contains(variables('hosts'), 'front')]",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
-      "dependsOn": ["vnet", "generate-customdata"],
+      "dependsOn": [ "vnet", "generate-customdata" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -404,19 +404,19 @@
           },
           "base": {
             "value": "[variables('base')]"
-          }, 
+          },
           "vm": {
             "value": "[variables('hosts').front]"
-          }          
+          }
         }
       }
-    },    
+    },
     {
       "name": "exec",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2015-01-01",
       "condition": "[contains(variables('hosts'), 'exec')]",
-      "dependsOn": ["vnet", "generate-customdata"],
+      "dependsOn": [ "vnet", "generate-customdata" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -429,7 +429,7 @@
           },
           "base": {
             "value": "[variables('base')]"
-          }, 
+          },
           "vm": {
             "value": "[variables('hosts').exec]"
           }
@@ -441,7 +441,7 @@
       "type": "Microsoft.Resources/deployments",
       "condition": "[contains(variables('hosts'), 'gpdb')]",
       "apiVersion": "2015-01-01",
-      "dependsOn": ["vnet", "generate-customdata"],
+      "dependsOn": [ "vnet", "generate-customdata" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -454,7 +454,7 @@
           },
           "base": {
             "value": "[variables('base')]"
-          },           
+          },
           "vm": {
             "value": "[variables('hosts').gpdb]"
           }
@@ -466,7 +466,7 @@
       "type": "Microsoft.Resources/deployments",
       "condition": "[contains(variables('hosts'), 'mdbsh0')]",
       "apiVersion": "2015-01-01",
-      "dependsOn": ["vnet", "generate-customdata"],
+      "dependsOn": [ "vnet", "generate-customdata" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -479,7 +479,7 @@
           },
           "base": {
             "value": "[variables('base')]"
-          },           
+          },
           "vm": {
             "value": "[variables('hosts').mdbsh0]"
           }
@@ -491,7 +491,7 @@
       "type": "Microsoft.Resources/deployments",
       "condition": "[contains(variables('hosts'), 'hbase')]",
       "apiVersion": "2015-01-01",
-      "dependsOn": ["vnet", "generate-customdata"],
+      "dependsOn": [ "vnet", "generate-customdata" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -504,7 +504,7 @@
           },
           "base": {
             "value": "[variables('base')]"
-          },           
+          },
           "vm": {
             "value": "[variables('hosts').hbase]"
           }
@@ -516,7 +516,7 @@
       "type": "Microsoft.Resources/deployments",
       "condition": "[contains(variables('hosts'), 'app')]",
       "apiVersion": "2015-01-01",
-      "dependsOn": ["vnet", "generate-customdata"],
+      "dependsOn": [ "vnet", "generate-customdata" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -529,7 +529,7 @@
           },
           "base": {
             "value": "[variables('base')]"
-          },           
+          },
           "vm": {
             "value": "[variables('hosts').app]"
           }
@@ -541,7 +541,7 @@
       "type": "Microsoft.Resources/deployments",
       "condition": "[contains(variables('hosts'), 'rmq0')]",
       "apiVersion": "2015-01-01",
-      "dependsOn": ["vnet", "generate-customdata"],
+      "dependsOn": [ "vnet", "generate-customdata" ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
@@ -554,7 +554,7 @@
           },
           "base": {
             "value": "[variables('base')]"
-          },           
+          },
           "vm": {
             "value": "[variables('hosts').rmq0]"
           }
