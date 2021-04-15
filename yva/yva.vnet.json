@@ -32,7 +32,9 @@
     "rmqSubnet": "rmq0",    
     "rmqPrefix": "10.0.2.16/28",
     "frontSubnet": "front",
-    "frontPrefix": "10.0.3.0/24"
+    "frontPrefix": "10.0.3.0/24",
+    "gpuSubnet": "gpu",
+    "gpuPrefix": "10.0.2.64/28"
   }, 
   "resources": [
     {
@@ -88,6 +90,12 @@
             "name": "[variables('frontSubnet')]",
             "properties": {
               "addressPrefix": "[variables('frontPrefix')]"
+            }
+          },
+          {
+            "name": "[variables('gpuSubnet')]",
+            "properties": {
+              "addressPrefix": "[variables('gpuPrefix')]"
             }
           }
         ],

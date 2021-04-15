@@ -1,0 +1,143 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "params": {
+      "type": "secureObject",
+      "defaultValue": {
+      }
+    },
+    "base": {
+      "type": "object",
+      "defaultValue": {
+      }      
+    },
+    "vm": {
+      "type": "object",
+      "metadata": {
+        "description": "Size of VM and swap size"
+      }
+    }
+  },
+  "variables": {
+    "hw0": {
+      "size": "Standard_B1ms", 
+      "count": 0,
+      "diskStorageType": "Standard_LRS", 
+      "diskSizeGB": 128
+    },     
+    "host": {
+      "vmssName": "[concat(parameters('vm').prefix, 'ss')]",
+      "nicname": "[concat(parameters('vm').prefix, 'nic')]",
+      "vmname": "[parameters('vm').prefix]",
+      "ipname": "[concat(parameters('vm').prefix, 'IP')]",
+      "subnet": "[parameters('vm').prefix]",
+      "hw": "[union(variables('hw0'), parameters('vm'))]"
+    },
+    "refs": {
+      "subnetRef": "[concat(parameters('base').vnetRef,'/subnets/', variables('host').subnet)]"
+    },    
+    "env": "[base64(string(parameters('params')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachineScaleSets",
+      "name": "[variables('host').vmssName]", 
+      "location":  "[resourceGroup().location]",
+      "apiVersion": "2017-03-30",
+      "sku": {
+        "name": "[variables('host').hw.size]",
+        "tier": "Standard",
+        "capacity": 1
+      },
+      "plan": "[parameters('base').vmImageGpuPlan]",
+      "properties": {
+        "overprovision": false,
+        "upgradePolicy": {
+          "mode": "Manual"
+        },
+        "virtualMachineProfile": {
+          "osProfile": {
+            "computerNamePrefix": "[variables('host').vmname]",
+            "adminUsername": "[parameters('base').adminUsername]",
+            "linuxConfiguration": {
+              "disablePasswordAuthentication": true,
+              "ssh": {
+                "publicKeys": [
+                  {
+                    "path": "[concat('/home/',parameters('base').adminUsername,'/.ssh/authorized_keys')]",
+                    "keyData": "[parameters('base').adminPublicKey]"
+                  }
+                ]
+              }
+            }
+          },
+          "storageProfile": {
+            "imageReference": "[parameters('base').vmImageGpu]",
+            "osDisk": {
+              "caching": "ReadWrite",
+              "managedDisk": {
+                "storageAccountType": "[variables('host').hw.diskStorageType]"
+              },
+              "createOption": "FromImage"
+            }, 
+            "dataDisks": [
+              {
+                "diskSizeGB": "[variables('host').hw.diskSizeGB]",
+                "lun": 0,
+                "managedDisk": {
+                  "storageAccountType": "[variables('host').hw.diskStorageType]"
+                },
+                "createOption": "Empty"
+              }            
+            ]
+          }, 
+          "networkProfile": {
+            "networkInterfaceConfigurations": [
+              {
+                "name": "nic",
+                "properties": {
+                  "primary": true,
+                  "ipConfigurations":[
+                    { 
+                      "name": "ip",
+                      "properties": {
+                        "privateIPAddressVersion":"IPv4",
+                        "primary":true,
+                        "subnet": {
+                          "id": "[variables('refs').subnetRef]"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "extensionProfile": {
+            "extensions":[
+              {
+                "name": "init",
+                "properties":{
+                  "publisher": "Microsoft.Azure.Extensions",
+                  "type": "CustomScript",
+                  "typeHandlerVersion": "2.0",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "fileUris":
+                      [
+                        "[uri(deployment().properties.templateLink.uri, 'init_gpu.sh')]"
+                      ]
+                    },
+                    "protectedSettings": {
+                      "commandToExecute": "[concat('bash init_gpu.sh', ' ', variables('env'))]"
+                    }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

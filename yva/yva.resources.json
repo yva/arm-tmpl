@@ -59,6 +59,17 @@
         "publisher": "Canonical",
         "version": "latest",
         "offer": "UbuntuServer"
+      },
+      "vmImageGpu": {
+        "sku": "ngc-base-version-21-02-2",
+        "publisher": "nvidia",
+        "version": "21.02.2",
+        "offer": "ngc_azure_17_11"
+      },
+      "vmImageGpuPlan": {
+        "name": "ngc-base-version-21-02-2",
+        "publisher": "nvidia",
+        "product": "ngc_azure_17_11"
       }
     },
     "host_sets": {
@@ -300,6 +311,16 @@
           "count": 0,
           "kv": {
             "PLATFORM_UPDATE_HOSTROLE": "az_exec_xl",
+            "INIT_SWAP_SIZE": "16000"
+          }
+        },
+        "gpu": {
+          "size": "Standard_NC4as_T4_v3",
+          "diskSizeGB": 256,
+          "prefix": "gpu",
+          "count": 0,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_gpu_xl",
             "INIT_SWAP_SIZE": "16000"
           }
         }
@@ -557,6 +578,31 @@
           },           
           "vm": {
             "value": "[variables('hosts').rmq0]"
+          }
+        }
+      }
+    },    
+    {
+      "name": "gpu",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "condition": "[contains(variables('hosts'), 'gpu')]",
+      "dependsOn": ["vnet", "generate-customdata"],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'host_ss_gpu.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "params": {
+            "value": "[union(json( concat('{\"kv\":', string(variables('hosts').gpu.kv) ,'}' )), variables('params'), json(reference('generate-customdata').outputs.customJson.value))]"
+          },
+          "base": {
+            "value": "[variables('base')]"
+          }, 
+          "vm": {
+            "value": "[variables('hosts').gpu]"
           }
         }
       }
