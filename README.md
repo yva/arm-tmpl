@@ -14,7 +14,7 @@ name | Prefix used by Azure to generate the URL gateway. For example, if you spe
 yvalogin | Login for deployment. Must be provided to you by an employee or partner of Yva.ai.
 yvapass | Password for deployment. Must be provided to you by an employee or partner of Yva.ai.
 securestring | The password that will be used to access the admin panel after deployment.
-size | dev - 1VM, small - 2VM, medium -3VM, large - 6VM, xl - 9VM.
+size | dev - 1VM, small - 2VM, medium -3VM, large - 6VM, xl - 9VM, xl-gpu - 10VM(+GPU_VM).
 
 ## Support
 

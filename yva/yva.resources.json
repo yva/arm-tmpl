@@ -19,7 +19,7 @@
     },
     "size": {
       "type": "string",
-      "allowedValues": ["dev", "small", "medium", "large", "xl"]
+      "allowedValues": ["dev", "small", "medium", "large", "xl", "xl-gpu"]
     },
     "custom": {
       "type": "object",
@@ -215,6 +215,107 @@
         }
       },
       "xl": {
+        "front": {
+          "size": "Standard_A4_v2",
+          "diskSizeGB": 128,
+          "prefix": "front",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_front_xl",
+            "INIT_SWAP_SIZE": "2048"
+          }
+        },
+        "mngr": {
+          "size": "Standard_D2_v3",
+          "diskSizeGB": 256,
+          "subnetPrefix": "10.0.0",
+          "prefix": "mngr",
+          "count": 1,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_mngr_xl",
+            "INIT_SWAP_SIZE": "8192",
+            "INIT_NOTIFY_BOOTSTRAP": "true"
+          }
+        },
+        "mdbsh0": {
+          "size": "Standard_DS4_v2",
+          "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
+          "prefix": "mdbsh0",
+          "count": 2,
+          "subnetPrefix": "10.0.2",
+          "hostkv": [
+            {
+              "PLATFORM_UPDATE_HOSTROLE": "az_mdbs0h0_xl"
+            },
+            {
+              "PLATFORM_UPDATE_HOSTROLE": "az_mdbs0h1_xl"
+            }
+          ],
+          "kv": {
+            "INIT_SWAP_SIZE": "8192"
+          }
+        },
+        "rmq0": {
+          "size": "Standard_D2s_v3",
+          "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
+          "prefix": "rmq0",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 20,
+          "kv": {
+            "INIT_SWAP_SIZE": "8192",
+            "PLATFORM_UPDATE_HOSTROLE": "az_rmq_xl"
+          }
+        },
+        "gpdb": {
+          "size": "Standard_D8s_v3",
+          "diskSizeGB": 256,
+          "diskStorageType": "Premium_LRS",
+          "prefix": "gpdb",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 36,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_gpdb_xl"
+          }
+        },
+        "hbase": {
+          "size": "Standard_F4s_v2",
+          "diskSizeGB": 512,
+          "diskStorageType": "Premium_LRS",
+          "prefix": "hbase",
+          "count": 1,
+          "subnetPrefix": "10.0.2",
+          "startIP": 60,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_hbase_xl"
+          }
+        },
+        "app": {
+          "size": "Standard_D3_v2",
+          "diskSizeGB": 256,
+          "prefix": "app",
+          "count": 1,
+          "subnetPrefix": "10.0.4",
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_app_xl",
+            "INIT_SWAP_SIZE": "8192"
+          }
+        },
+        "exec": {
+          "size": "Standard_F4s_v2",
+          "diskSizeGB": 256,
+          "prefix": "exec",
+          "count": 0,
+          "kv": {
+            "PLATFORM_UPDATE_HOSTROLE": "az_exec_xl",
+            "INIT_SWAP_SIZE": "16000"
+          }
+        }
+      },
+      "xl-gpu": {
         "front": {
           "size": "Standard_A4_v2",
           "diskSizeGB": 128,

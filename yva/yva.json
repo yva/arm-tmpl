@@ -19,7 +19,7 @@
     },
     "size": {
       "type":"string",
-      "allowedValues": ["dev", "small", "medium", "large", "xl"],
+      "allowedValues": ["dev", "small", "medium", "large", "xl", "xl-gpu"],
       "defaultValue": "small"
     },
     "adminkey": {
